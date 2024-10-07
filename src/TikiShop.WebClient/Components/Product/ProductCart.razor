@@ -1,0 +1,47 @@
+﻿@using TikiShop.WebClient.Services.BasketService
+@using TikiShop.WebClient.Components.Common
+
+@inject IBasketService _basketService
+@inject NavigationManager _navManager
+
+<TelerikCard Class="border-primary-subtle rounded-4 border">
+    <div class="m-auto" style="cursor:pointer;"
+         @onclick=@(() => _navManager.NavigateTo($"/products/{ProductInfo.Id}"))>
+        <CardImage Src="@ProductInfo.ThumbnailUrl"
+                   Width="100%"
+                   Height="100%"
+                   Class="border-secondary-subtle m-auto border"></CardImage>
+    </div>
+
+    <CardBody>
+        <div style="height:60px;cursor:pointer;" @onclick=@(() => _navManager.NavigateTo($"/products/{ProductInfo.Id}"))>
+            <!-- Truncate product name if it exceeds 20 characters -->
+            @if (ProductInfo.Name.Length > 55)
+            {
+                @($"{ProductInfo.Name.Substring(0, 55)}...")
+            }
+            else
+            {
+                @ProductInfo.Name
+            }
+        </div>
+
+        <CardSeparator></CardSeparator>
+
+        <div class="d-flex justify-content-around mt-2">
+            <Rating Max="5" Star="@((int)ProductInfo.RatingAverage)"></Rating>
+            <CardSubTitle>@ProductInfo.TotalBuyer</CardSubTitle>
+        </div>
+
+        <CardSeparator></CardSeparator>
+
+        <CardTitle Class="mt-2 text-danger">@(ProductInfo.Price)$</CardTitle>
+    </CardBody>
+    <CardActions Layout="@CardActionsLayout.Stretch">
+        <TelerikButton OnClick=@(() => OnClickAddToCartButton(ProductInfo.Id))
+                       Icon="@SvgIcon.Cart"
+                       Rounded="@ThemeConstants.Button.Rounded.Full">
+            Add To Cart
+        </TelerikButton>
+    </CardActions>
+</TelerikCard>

@@ -1,0 +1,32 @@
+﻿@page "/account"
+
+<div class="w-75 mx-auto">
+    <TelerikBreadcrumb Data="@Items" Class="mb-4">
+    </TelerikBreadcrumb>
+
+    <TelerikGridLayout ColumnSpacing="5%" RowSpacing="20px">
+        <GridLayoutColumns>
+            <GridLayoutColumn Width="25%"></GridLayoutColumn>
+            <GridLayoutColumn Width="70%"></GridLayoutColumn>
+        </GridLayoutColumns>
+
+        <GridLayoutItems>
+            <GridLayoutItem>
+                <TelerikMenu Data="@MenuItems" Orientation="@MenuOrientation.Vertical"></TelerikMenu>
+            </GridLayoutItem>
+            <GridLayoutItem>
+                <TelerikCard Orientation="@CardOrientation.Horizontal">
+                    <CardHeader>Thông tin cá nhân</CardHeader>
+                    <CardBody>
+                        <TelerikAvatar Type="AvatarType.Text"
+                                       ThemeColor="@ThemeConstants.Avatar.ThemeColor.Info"
+                                       Size="@ThemeConstants.Avatar.Size.Large">
+                            JD
+                        </TelerikAvatar>
+                    </CardBody>
+                </TelerikCard>
+            </GridLayoutItem>
+        </GridLayoutItems>
+
+    </TelerikGridLayout>
+</div>

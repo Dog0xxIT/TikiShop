@@ -1,0 +1,43 @@
+﻿@page "/checkout"
+@using TikiShop.WebClient.Components.Order
+
+@inject NavigationManager _navManager
+
+<div class="w-75 mx-auto">
+    <TelerikWizard>
+        <WizardSteps>
+            <WizardStep Label="Shipping Address" Icon="@SvgIcon.MapMarkerTarget">
+                <Content>
+                    <div class="w-50 mx-auto">
+                        <span class="w-50 mx-auto">1. Please fill in your shipping address</span>
+                        <CheckoutAddressForm></CheckoutAddressForm>
+                    </div>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Payment Method" Icon="@SvgIcon.Dollar">
+                <Content>
+                    <div class="w-50 mx-auto">
+                        <span>2. Please select your payment method</span>
+                        <CheckoutPaymentForm></CheckoutPaymentForm>
+                    </div>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Confirmation" Icon="@SvgIcon.Check">
+                <Content>
+                    <span class="mx-auto">3. Review and confirm your order</span>
+                    <h2>Registration completed.</h2>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+    </TelerikWizard>
+</div>
+
+@code {
+
+    public int stepIndex;
+
+    public void ValueChangeHandler(int index)
+    {
+        stepIndex = index;
+    }
+}

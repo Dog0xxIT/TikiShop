@@ -1,25 +1,34 @@
-using TikiShop.WebClient.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using TikiShop.WebClient;
+using TikiShop.WebClient.Core;
+using TikiShop.WebClient.Core.CoreHttpClient;
+using TikiShop.WebClient.Services.BasketService;
+using TikiShop.WebClient.Services.CatalogService;
+using TikiShop.WebClient.Services.IdentityService;
+using TikiShop.WebClient.States.AuthState;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Add services to the container.
-builder.Services.AddRazorComponents();
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-var app = builder.Build();
+builder.Services
+    .AddHttpClient(ClientsConfig.CatalogClient, httpClient =>
+        {
+            httpClient.BaseAddress = new Uri("https://localhost:7038");
+        })
+    .AddHttpMessageHandler<CookieHandler>();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>();
-
-app.Run();
+builder.Services.AddTelerikBlazor();
+builder.Services.AddTransient<CookieHandler>();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
+builder.Services.AddScoped(sp => (IAccountManagement)sp.GetRequiredService<AuthenticationStateProvider>());
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<ICoreHttpClient, CoreHttpClient>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<IBasketService, BasketService>();
+await builder.Build().RunAsync();

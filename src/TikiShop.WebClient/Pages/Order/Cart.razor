@@ -1,0 +1,58 @@
+﻿@page "/cart"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using TikiShop.WebClient.Services.BasketService
+
+@attribute [Authorize]
+
+@inject IBasketService _basketService
+
+<TelerikLoaderContainer Visible="@_visibleLoader"></TelerikLoaderContainer>
+
+<TelerikTileLayout Columns="4"
+                   Resizable="false"
+                   Reorderable="false"
+                   Class="bg-transparent"
+                   RowHeight="1">
+    <TileLayoutItems>
+        <TileLayoutItem HeaderText="Shopping Cart" ColSpan="3" RowSpan="_basketItemList.Count+1">
+            <Content>
+                @foreach (var baskItem in _basketItemList)
+                {
+                    <TelerikCard Orientation="CardOrientation.Horizontal" Class="mb-4 rounded-4 shadow">
+                        <CardImage Src="@baskItem.PictureUrl" Height="120px" Width="120px"></CardImage>
+
+                        <CardHeader>
+                            @{
+                                var productName = baskItem.ProductName.Length > 40 ?
+                                $"{baskItem.ProductName.Substring(0, 40)}..." :
+                                baskItem.ProductName;
+                            }
+                            <CardTitle>@productName</CardTitle>
+                            <CardSubTitle Class="text-warning">Price: @baskItem.UnitPrice $</CardSubTitle>
+                            <CardBody>
+                                <p>Some quick example text to build on the card title and make up the bulk of the card content.</p>
+                            </CardBody>
+                        </CardHeader>
+
+                        <CardSeparator></CardSeparator>
+
+                        <CardActions>
+                            <TelerikNumericTextBox Value="@baskItem.Quantity"
+                                                   Width="100px"
+                                                   Min="0"
+                                                   Max="Int32.MaxValue"
+                                                   ValueChanged=@(async (int newValue) => await UpdateQty(baskItem.Id,newValue))>
+                            </TelerikNumericTextBox>
+                            <TelerikButton OnClick=@(async () => await DeleteBasketItem(baskItem.Id))>Delete</TelerikButton>
+                        </CardActions>
+                    </TelerikCard>
+                }
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Total" ColSpan="1" RowSpan="2">
+            <Content>You can put components in the tiles too.</Content>
+        </TileLayoutItem>
+    </TileLayoutItems>
+</TelerikTileLayout>
