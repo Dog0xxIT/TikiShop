@@ -19,7 +19,7 @@ public class BasketService : IBasketService
     public async Task<List<GetBasketByCustomerIdResponse>> GetBasketByCustomerId()
     {
         var result = await _coreHttpClient.GetAsync<List<GetBasketByCustomerIdResponse>>(
-            clientName: ClientsConfig.BasketClient,
+            clientName: "TikiShopApi",
             uri: "/api/v1/baskets/getBasketByCustomerId");
         return result.Data;
     }
@@ -27,7 +27,7 @@ public class BasketService : IBasketService
     public async Task<ResultObject<ResponseObject>> AddToBasket(AddToBasketRequest request)
     {
         var result = await _coreHttpClient.PostAsync<ResponseObject>(
-            clientName: ClientsConfig.BasketClient,
+            clientName: "TikiShopApi",
             uri: "api/v1/baskets/addToBasket",
             reqObj: request);
         return result;
@@ -36,7 +36,7 @@ public class BasketService : IBasketService
     public async Task<ResultObject<ResponseObject>> UpdateQty(UpdateQtyRequest request)
     {
         var result = await _coreHttpClient.PatchAsync<ResponseObject>(
-            clientName: ClientsConfig.BasketClient,
+            clientName: "TikiShopApi",
             uri: "api/v1/baskets/updateQty",
             reqObj: request);
         return result;
@@ -45,7 +45,7 @@ public class BasketService : IBasketService
     public async Task<ResultObject<ResponseObject>> DeleteBasketItem(int id)
     {
         var result = await _coreHttpClient.DeleteAsync<ResponseObject>(
-            clientName: ClientsConfig.BasketClient,
+            clientName: "TikiShopApi",
             uri: $"api/v1/baskets/{id}");
         return result;
     }

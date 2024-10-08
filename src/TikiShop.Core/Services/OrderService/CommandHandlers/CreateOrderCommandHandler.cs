@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using TikiShop.Core.Services.OrderService.Commands;
+using TikiShop.Core.RequestModels.Order;
 
 namespace TikiShop.Core.Services.OrderService.CommandHandlers
 {
-    internal class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, ServiceResult>
+    internal class CreateOrderCommandHandler : IRequestHandler<CreateOrderRequest, ServiceResult>
     {
-        public async Task<ServiceResult> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+        public async Task<ServiceResult> Handle(CreateOrderRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

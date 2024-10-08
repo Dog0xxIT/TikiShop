@@ -17,7 +17,7 @@ namespace TikiShop.WebClient.Services.IdentityService
         public async Task<ResultObject<ResponseObject>> ConfirmEmail(ConfirmEmailRequest request)
         {
             return await _coreHttpClient.PostAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/confirmEmail",
                 reqObj: request);
         }
@@ -25,7 +25,7 @@ namespace TikiShop.WebClient.Services.IdentityService
         public async Task<ResultObject<ResponseObject>> Register(RegisterRequest request)
         {
             return await _coreHttpClient.PostAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/register",
                 reqObj: request);
         }
@@ -33,7 +33,7 @@ namespace TikiShop.WebClient.Services.IdentityService
         public async Task<ResultObject<ResponseObject>> Login(SignInRequest request)
         {
             return await _coreHttpClient.PostAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/login",
                 reqObj: request);
         }
@@ -41,14 +41,14 @@ namespace TikiShop.WebClient.Services.IdentityService
         public async Task<ResultObject<ResponseObject>> Logout()
         {
             return await _coreHttpClient.GetAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/logout");
         }
 
         public async Task<ResultObject<ResponseObject>> ResendConfirmEmail(ResendConfirmEmailRequest request)
         {
             return await _coreHttpClient.PostAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/resendConfirmEmail",
                 reqObj: request);
         }
@@ -56,7 +56,7 @@ namespace TikiShop.WebClient.Services.IdentityService
         public async Task<ResultObject<ResponseObject>> ForgotPassword(ForgotPasswordRequest request)
         {
             return await _coreHttpClient.PostAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/forgotPassword",
                 reqObj: request);
         }
@@ -64,7 +64,7 @@ namespace TikiShop.WebClient.Services.IdentityService
         public async Task<ResultObject<ResponseObject>> ResetPassword(ResetPasswordRequest request)
         {
             return await _coreHttpClient.PostAsync<ResponseObject>(
-                clientName: ClientsConfig.IdentityClient,
+                clientName: "TikiShopApi",
                 uri: "/api/v1/resetPassword",
                 reqObj: request);
         }

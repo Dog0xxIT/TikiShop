@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using TikiShop.Core.Services.CatalogService.Commands;
+using TikiShop.Core.RequestModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.CommandHandlers;
 
-public class UpdateBrandCommandHandler: IRequestHandler<UpdateBrandCommand, ServiceResult>
+public class UpdateBrandCommandHandler: IRequestHandler<UpdateBrandRequest, ServiceResult>
 {
-    public async Task<ServiceResult> Handle(UpdateBrandCommand request, CancellationToken cancellationToken)
+    public async Task<ServiceResult> Handle(UpdateBrandRequest request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

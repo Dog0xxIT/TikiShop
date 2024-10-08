@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using TikiShop.Core.Dto;
-using TikiShop.Core.Dto.Catalog;
+using TikiShop.Core.RequestModels.Catalog;
+using TikiShop.Core.ResponseModels;
+using TikiShop.Core.ResponseModels.Catalog;
 using TikiShop.Infrastructure;
-using TikiShop.Share.RequestModels;
-using TikiShop.Share.RequestModels.Catalog;
-using TikiShop.Share.ResponseModels;
-using TikiShop.Share.ResponseModels.Catalog;
 using TikiShop.Infrastructure.Models;
+using GetListBrandsResponse = TikiShop.Core.ResponseModels.Catalog.GetListBrandsResponse;
+using GetProductByIdResponse = TikiShop.Core.ResponseModels.Catalog.GetProductByIdResponse;
+using PaginationRequest = TikiShop.Core.RequestModels.PaginationRequest;
 
 namespace TikiShop.Core.Services.CatalogService.Queries
 {
@@ -28,7 +28,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             _logger = logger;
         }
 
-        public async Task<PaginationDto<GetListProductDto>> GetListProducts(GetListProductRequest req)
+        public async Task<ResponseModels.PaginationResponse<ResponseModels.Catalog.GetListProductResponse>> GetListProducts(GetListProductRequest req)
         {
             if (req.MinPrice > req.MaxPrice)
             {
@@ -48,7 +48,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 .ToListAsync();
 
             var productsDto = products.Select(product =>
-                new GetListProductDto
+                new GetListProductResponse
                 {
                     Id = product.Id,
                     CategoryId = product.CategoryId,
@@ -67,7 +67,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             var totalProducts = await _context.Products.CountAsync();
             var totalPage = req.Limit != 0 ? (totalProducts / req.Limit) + 1 : 0;
 
-            var response = new PaginationDto<GetListProductDto>
+            var response = new ResponseModels.PaginationResponse<GetListProductResponse>
             {
                 Data = productsDto,
                 Meta = new PaginationMetaDto
@@ -83,7 +83,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return response;
         }
 
-        public async Task<GetProductByIdDto> GetProductById(int id)
+        public async Task<GetProductByIdResponse> GetProductById(int id)
         {
            var product = await _context.Products
                  .Include(p => p.Brand)
@@ -120,7 +120,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     //Option2 = productVariant?.Options?.ElementAtOrDefault(1)?.Value ?? "",
                 }).ToList() ?? new();
 
-            var response = new GetProductByIdDto
+            var response = new GetProductByIdResponse
             {
                 Id = product!.Id,
                 Name = product.Name,
@@ -152,7 +152,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return response;
         }
 
-        public async Task<PaginationDto<GetListBrandsDto>> GetListBrands(PaginationRequest req)
+        public async Task<ResponseModels.PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
         {
             var queryable = _context.Brands
                 .Skip(req.Page)
@@ -166,9 +166,9 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             var totalBrand = await _context.Brands.CountAsync();
             var totalPage = req.Limit != 0 ?
                 (totalBrand / req.Limit) + 1 : 0;
-            var brandsDto = brands.Adapt<List<GetListBrandsDto>>();
+            var brandsDto = brands.Adapt<List<GetListBrandsResponse>>();
 
-            var response = new PaginationDto<GetListBrandsDto>
+            var response = new ResponseModels.PaginationResponse<GetListBrandsResponse>
             {
                 Data = brandsDto,
                 Meta = new PaginationMetaDto
@@ -184,14 +184,14 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return response;
         }
 
-        public async Task<List<GetAllCategoriesDto>> GetCategoriesHierarchy()
+        public async Task<List<GetAllCategoriesResponse>> GetCategoriesHierarchy()
         {
             var categories = await _context.Categories
                 .AsNoTracking()
                 .ToListAsync();
 
             var categoriesDto = categories
-                .Select(category => new GetAllCategoriesDto
+                .Select(category => new GetAllCategoriesResponse
                 {
                     Id = category.Id,
                     Name = category.Name,
@@ -204,11 +204,11 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return categoriesDto;
         }
 
-        public async Task<PaginationDto<GetAllCategoriesDto>> GetCategories()
+        public async Task<PaginationResponse<GetAllCategoriesResponse>> GetCategories()
         {
             var categories = await _context.Categories.ToListAsync();
 
-            var categoriesDto = categories.Select(category => new GetAllCategoriesDto
+            var categoriesDto = categories.Select(category => new GetAllCategoriesResponse
             {
                 Id = category.Id,
                 Name = category.Name,
@@ -217,7 +217,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 Childs = new(),
             }).ToList();
 
-            var response = new PaginationDto<GetAllCategoriesDto>
+            var response = new ResponseModels.PaginationResponse<GetAllCategoriesResponse>
             {
                 Data = categoriesDto,
                 Meta = new PaginationMetaDto
@@ -284,7 +284,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return queryable;
         }
 
-        private List<GetAllCategoriesDto> GetChildCategories(
+        private List<GetAllCategoriesResponse> GetChildCategories(
             int parentCategoryId,
             List<Category> categoryList,
             int level)
@@ -297,7 +297,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             // Tìm danh mục con của danh mục hiện tại (parentCategory)
             var childCategories = categoryList.Where(c => c.ParentId == parentCategoryId);
 
-            return childCategories.Select(child => new GetAllCategoriesDto
+            return childCategories.Select(child => new GetAllCategoriesResponse
             {
                 Id = child.Id,
                 Name = child.Name,

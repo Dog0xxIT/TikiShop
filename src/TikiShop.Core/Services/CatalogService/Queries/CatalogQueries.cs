@@ -1,10 +1,11 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
-using TikiShop.Core.Dto;
-using TikiShop.Core.Dto.Catalog;
+using TikiShop.Core.RequestModels.Catalog;
+using TikiShop.Core.ResponseModels;
+using TikiShop.Core.ResponseModels.Catalog;
 using TikiShop.Infrastructure;
-using TikiShop.Share.RequestModels;
-using TikiShop.Share.RequestModels.Catalog;
+
+using PaginationRequest = TikiShop.Core.RequestModels.PaginationRequest;
 
 namespace TikiShop.Core.Services.CatalogService.Queries
 {
@@ -22,7 +23,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             _logger = logger;
         }
 
-        public async Task<PaginationDto<GetListProductDto>> GetListProducts(GetListProductRequest req)
+        public async Task<PaginationResponse<GetListProductResponse>> GetListProducts(GetListProductRequest req)
         {
             using var conn = _dapperContext.CreateConnection();
             var sql = $"""
@@ -45,9 +46,9 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             {
                 sql += "DESC";
             }
-            var result = await conn.QueryAsync<GetListProductDto>(sql);
+            var result = await conn.QueryAsync<GetListProductResponse>(sql);
             var total = await conn.ExecuteScalarAsync<int>("select count(*) from Products WHERE Products.IsDeleted = 0");
-            var pagingResult = new PaginationDto<GetListProductDto>
+            var pagingResult = new PaginationResponse<GetListProductResponse>
             {
                 Data = result,
                 Meta = new()
@@ -62,7 +63,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return pagingResult;
         }
 
-        public async Task<GetProductByIdDto> GetProductById(int id)
+        public async Task<GetProductByIdResponse> GetProductById(int id)
         {
             var sql = $"""
                        select * from products
@@ -74,7 +75,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<PaginationDto<GetListBrandsDto>> GetListBrands(PaginationRequest req)
+        public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
         {
             var sql = $"""
                        select * from brands
@@ -85,7 +86,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<List<GetAllCategoriesDto>> GetCategoriesHierarchy()
+        public async Task<List<GetAllCategoriesResponse>> GetCategoriesHierarchy()
         {
             var sql = $"""
                        select * from brands
@@ -96,7 +97,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<PaginationDto<GetAllCategoriesDto>> GetCategories()
+        public async Task<PaginationResponse<GetAllCategoriesResponse>> GetCategories()
         {
             var sql = $"""
                        select * from categories

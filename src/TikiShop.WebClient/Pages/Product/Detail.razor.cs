@@ -11,7 +11,7 @@ public partial class Detail
 
     private GetProductByIdResponse _productInfo;
     private List<BreadcrumbItem> _breadcrumbItems;
-
+    private int _quantity;
     protected override async Task OnInitializedAsync()
     {
         

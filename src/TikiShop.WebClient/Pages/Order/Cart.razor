@@ -1,7 +1,6 @@
 ﻿@page "/cart"
 
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
 @using TikiShop.WebClient.Services.BasketService
 
 @attribute [Authorize]
@@ -52,7 +51,9 @@
             </Content>
         </TileLayoutItem>
         <TileLayoutItem HeaderText="Total" ColSpan="1" RowSpan="2">
-            <Content>You can put components in the tiles too.</Content>
+            <Content>You can put components in the tiles too.
+                <TelerikButton Class="mx-2 mb-4 py-3 w-100" ThemeColor="@ThemeConstants.Button.ThemeColor.Error">Buy</TelerikButton>
+            </Content>
         </TileLayoutItem>
     </TileLayoutItems>
 </TelerikTileLayout>

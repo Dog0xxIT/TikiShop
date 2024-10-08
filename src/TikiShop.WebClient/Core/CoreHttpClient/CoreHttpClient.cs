@@ -227,4 +227,157 @@ public class CoreHttpClient : ICoreHttpClient
 
         return default!;
     }
+
+    public async Task<ResultObject> PostAsync(string clientName, string uri, object reqObj)
+    {
+        var json = JsonConvert.SerializeObject(reqObj);
+        var stringContent = new StringContent(json, Encoding.UTF8, mediaType: "application/json");
+        var httpClient = _clientFactory.CreateClient(clientName);
+
+        try
+        {
+            _logger.LogInformation($"Request Object: {json}");
+            var client = await httpClient.PostAsync(uri, stringContent);
+
+            if (client.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Success,
+                    Messages = "Success"
+                };
+            }
+            else
+            {
+                var resultData = await client.Content.ReadFromJsonAsync<ProblemDetailsResponse>();
+                _logger.LogWarning($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Failed,
+                    Messages = resultData!.Detail,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Exception: {ex}");
+        }
+
+        return default!;
+    }
+
+    public async Task<ResultObject> PutAsync(string clientName, string uri, object reqObj)
+    {
+        var json = JsonConvert.SerializeObject(reqObj);
+        var stringContent = new StringContent(json, Encoding.UTF8, mediaType: "application/json");
+        var httpClient = _clientFactory.CreateClient(clientName);
+
+        try
+        {
+            _logger.LogInformation($"Request Object: {json}");
+            var client = await httpClient.PutAsync(uri, stringContent);
+
+            if (client.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Success,
+                    Messages = "Success"
+                };
+            }
+            else
+            {
+                var resultData = await client.Content.ReadFromJsonAsync<ProblemDetailsResponse>();
+                _logger.LogWarning($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Failed,
+                    Messages = resultData!.Detail,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Exception: {ex}");
+        }
+
+        return default!;
+    }
+
+    public async Task<ResultObject> PatchAsync(string clientName, string uri, object reqObj)
+    {
+        var json = JsonConvert.SerializeObject(reqObj);
+        var stringContent = new StringContent(json, Encoding.UTF8, mediaType: "application/json");
+        var httpClient = _clientFactory.CreateClient(clientName);
+
+        try
+        {
+            _logger.LogInformation($"Request Object: {json}");
+            var client = await httpClient.PatchAsync(uri, stringContent);
+
+            if (client.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Success,
+                    Messages = "Success",
+                };
+            }
+            else
+            {
+                var resultData = await client.Content.ReadFromJsonAsync<ProblemDetailsResponse>();
+                _logger.LogWarning($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Failed,
+                    Messages = resultData!.Detail,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Exception: {ex}");
+        }
+
+        return default!;
+    }
+
+    public async Task<ResultObject> DeleteAsync(string clientName, string uri)
+    {
+        var httpClient = _clientFactory.CreateClient(clientName);
+
+        try
+        {
+            var client = await httpClient.DeleteAsync(uri);
+
+            if (client.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Success,
+                    Messages = "Success",
+                };
+            }
+            else
+            {
+                var resultData = await client.Content.ReadFromJsonAsync<ProblemDetailsResponse>();
+                _logger.LogWarning($"Status Code: {client.StatusCode}");
+                return new ResultObject
+                {
+                    ResultCode = ResultCode.Failed,
+                    Messages = resultData!.Detail,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Exception: {ex}");
+        }
+
+        return default!;
+    }
 }

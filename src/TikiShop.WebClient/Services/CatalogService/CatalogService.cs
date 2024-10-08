@@ -18,7 +18,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest paginationRequest)
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListBrandsResponse>>(
-                clientName: ClientsConfig.CatalogClient,
+                clientName: "TikiShopApi",
                 uri: "api/v1/catalog/products",
                 queryObj: paginationRequest);
 
@@ -28,7 +28,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         public async Task<List<GetAllCategoriesResponse>> GetAllCategoriesHierarchy()
         {
             var resultObject = await _coreHttpClient.GetAsync<List<GetAllCategoriesResponse>>(
-                clientName: ClientsConfig.CatalogClient,
+                clientName: "TikiShopApi",
                 uri: "api/v1/catalog/categories/hierarchy");
 
             return resultObject.Data;
@@ -37,7 +37,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         public async Task<PaginationResponse<GetAllCategoriesResponse>> GetAllCategories()
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetAllCategoriesResponse>>(
-                clientName: ClientsConfig.CatalogClient,
+                clientName: "TikiShopApi",
                 uri: "api/v1/catalog/categories");
 
             return resultObject.Data;
@@ -46,7 +46,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         public async Task<PaginationResponse<GetListProductResponse>> GetListProducts(PaginationRequest paginationRequest)
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListProductResponse>>(
-                 clientName: ClientsConfig.CatalogClient,
+                 clientName: "TikiShopApi",
                  uri: "api/v1/catalog/products",
                  queryObj: paginationRequest);
 
@@ -57,7 +57,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         public async Task<ResultObject<GetProductByIdResponse>> GetProductById(int productId)
         {
             return await _coreHttpClient.GetAsync<GetProductByIdResponse>(
-                clientName: ClientsConfig.CatalogClient,
+                clientName: "TikiShopApi",
                 uri: $"api/v1/catalog/products/{productId}");
         }
     }

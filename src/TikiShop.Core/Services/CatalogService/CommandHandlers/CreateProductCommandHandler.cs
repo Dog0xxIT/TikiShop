@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using TikiShop.Core.Services.CatalogService.Commands;
+using TikiShop.Core.RequestModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.CommandHandlers
 {
-    internal class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ServiceResult>
+    internal class CreateProductCommandHandler : IRequestHandler<CreateProductRequest, ServiceResult>
     {
-        public async Task<ServiceResult> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<ServiceResult> Handle(CreateProductRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

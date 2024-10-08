@@ -7,9 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
-    <PackageReference Include="dotenv.net" Version="3.2.1" />
-    <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
@@ -21,15 +18,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="MimeKit" Version="4.8.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TikiShop.Core\TikiShop.Core.csproj" />
     <ProjectReference Include="..\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj" />
-    <ProjectReference Include="..\TikiShop.Share\TikiShop.Share.csproj" />
   </ItemGroup>
 
   <ItemGroup>

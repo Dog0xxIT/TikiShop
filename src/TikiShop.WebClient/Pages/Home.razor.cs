@@ -27,7 +27,7 @@ public partial class Home
         _getListProductRequest = new()
         {
             Page = 1,
-            Limit = 36,
+            Limit = 35,
         };
         _productPaginationResponse = new();
         _categoryList = new();
@@ -46,7 +46,7 @@ public partial class Home
             {
                 Keyword = _searchText,
                 Page = 1,
-                Limit = 36,
+                Limit = 35,
             };
             _visibleLoader = true;
             _productPaginationResponse = await _catalogService.GetListProducts(_getListProductRequest);
@@ -73,7 +73,7 @@ public partial class Home
         _getListProductRequest = new()
         {
             Page = page,
-            Limit = 54,
+            Limit = 35,
         };
         _visibleLoader = true;
         _productPaginationResponse = await _catalogService.GetListProducts(_getListProductRequest);

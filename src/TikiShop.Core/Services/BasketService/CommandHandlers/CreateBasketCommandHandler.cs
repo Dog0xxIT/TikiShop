@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using TikiShop.Core.Services.BasketService.Commands;
+using TikiShop.Core.RequestModels.Basket;
 
 namespace TikiShop.Core.Services.BasketService.CommandHandlers;
 
-internal class CreateBasketCommandHandler  : IRequestHandler<CreateBasketCommand, ServiceResult>
+internal class CreateBasketCommandHandler  : IRequestHandler<CreateBasketRequest, ServiceResult>
 {
-    public async Task<ServiceResult> Handle(CreateBasketCommand request, CancellationToken cancellationToken)
+    public async Task<ServiceResult> Handle(CreateBasketRequest request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

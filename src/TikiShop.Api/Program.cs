@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using TikiShop.Api.Configurations;
-using TikiShop.Api.Services.EmailService;
-using TikiShop.Api.Services.TokenService;
+using TikiShop.Core.Configurations;
 using TikiShop.Core.Services.BasketService.Queries;
 using TikiShop.Core.Services.CatalogService.Queries;
+using TikiShop.Core.Services.EmailService;
+using TikiShop.Core.Services.IdentityService;
 using TikiShop.Core.Services.OrderService.Queries;
+using TikiShop.Core.Services.TokenService;
 using TikiShop.Infrastructure;
 using TikiShop.Infrastructure.Models;
 
@@ -24,6 +25,7 @@ builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddSingleton<TikiShopDapperContext>();
 builder.Services.AddTransient<ICatalogQueries, EfCatalogQueries>();
+builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
 

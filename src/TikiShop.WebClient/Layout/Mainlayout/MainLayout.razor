@@ -12,7 +12,8 @@
                          AnimationDuration="5">
     </TelerikNotification>
 
-    <TelerikAppBar>
+    <TelerikAppBar PositionMode="AppBarPositionMode.Fixed"
+                   Position="AppBarPosition.Top">
         <AppBarSection>
             <img src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/logo-full.svg" alt="">
         </AppBarSection>
@@ -36,11 +37,24 @@
 
         <AppBarSpacer></AppBarSpacer>
 
-        <AuthorizeView>
-            <Authorized>
-                <AppBarSection>
+        <AppBarSection>
+            <TelerikButton Icon="@SvgIcon.Home"
+                           Class="px-4"
+                           OnClick=@(() => _nav.NavigateTo("/"))>Home</TelerikButton>
+        </AppBarSection>
+
+        <AppBarSection>
+            <AuthorizeView>
+                <NotAuthorized>
+                    <TelerikButton Icon="@SvgIcon.User"
+                                   Class="px-4"
+                                   OnClick=@(() => _nav.NavigateTo("/login"))>Account</TelerikButton>
+                </NotAuthorized>
+                <Authorized>
                     <TelerikDropDownButton Icon="@SvgIcon.User"
-                                           Class="px-4">
+                                           Class="px-4"
+                                           FillMode="@ThemeConstants.Button.FillMode.Flat"
+                                           Rounded="@ThemeConstants.Button.Rounded.Large">
                         <DropDownButtonContent>User</DropDownButtonContent>
                         <DropDownButtonItems>
                             <DropDownButtonItem Icon="@SvgIcon.User"
@@ -53,29 +67,20 @@
                                                 OnClick=@(()=> _nav.NavigateTo("/"))>Logout</DropDownButtonItem>
                         </DropDownButtonItems>
                     </TelerikDropDownButton>
-                </AppBarSection>
+                </Authorized>
+            </AuthorizeView>
+        </AppBarSection>
 
-                <AppBarSeparator Class="thick-separator"></AppBarSeparator>
+        <AppBarSeparator></AppBarSeparator>
 
-                <AppBarSection>
-                    <TelerikButton Icon="@SvgIcon.Cart" Class="px-4" OnClick=@(() => _nav.NavigateTo("/cart"))>Cart</TelerikButton>
-                </AppBarSection>
-            </Authorized>
-
-            <NotAuthorized>
-                <AppBarSection>
-                    <TelerikButton Icon="@SvgIcon.Login" Class="px-4" OnClick=@(() => _nav.NavigateTo("/login"))>Login</TelerikButton>
-                </AppBarSection>
-
-                <AppBarSeparator Class="thick-separator"></AppBarSeparator>
-
-                <AppBarSection>
-                    <TelerikButton Icon="@SvgIcon.Cart" Class="px-4" OnClick=@(() => _nav.NavigateTo("/cart"))>Cart</TelerikButton>
-                </AppBarSection>
-            </NotAuthorized>
-        </AuthorizeView>
+        <AppBarSection>
+            <TelerikButton Icon="@SvgIcon.Cart"
+                           Class="px-4"
+                           OnClick=@(() => _nav.NavigateTo("/cart"))>Cart</TelerikButton>
+        </AppBarSection>
     </TelerikAppBar>
-    <main class="m-5" style="background-color:f5f5fa;">
+
+    <main class="mb-5 w-75 mx-auto" style="background-color:f5f5fa; margin-top: 100px">
         <CascadingValue Name="Notification" Value="@_notificationRef">
             <CascadingValue Name="SearchText" Value="@_search">
                 @Body

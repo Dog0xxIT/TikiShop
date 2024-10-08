@@ -1,9 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TikiShop.Core.RequestModels.Basket;
+using TikiShop.Core.RequestModels.Catalog;
 using TikiShop.Core.Services.BasketService.Queries;
 using TikiShop.Infrastructure.Common;
-using TikiShop.Share.RequestModels.Basket;
 
 namespace TikiShop.Api.Controllers
 {

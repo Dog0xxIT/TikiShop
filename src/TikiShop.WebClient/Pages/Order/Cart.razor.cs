@@ -17,7 +17,11 @@ public partial class Cart
     {
         _visibleLoader = true;
         _basketItemList = new();
-        _basketItemList = await _basketService.GetBasketByCustomerId();
+        _basketItemList.Add(new());
+        _basketItemList.Add(new());
+        _basketItemList.Add(new());
+        _basketItemList.Add(new());
+        //_basketItemList = await _basketService.GetBasketByCustomerId();
         _visibleLoader = false;
     }
 

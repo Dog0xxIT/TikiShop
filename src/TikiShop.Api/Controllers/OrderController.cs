@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TikiShop.Core.Services.OrderService.Queries;
-using TikiShop.Share.ResponseModels;
 
 namespace TikiShop.Api.Controllers
 {
@@ -42,27 +41,27 @@ namespace TikiShop.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create()
         {
-            return Ok(ResponseObject.Succeeded);
+            return Ok();
         }
 
         [HttpPost("draft")]
         public async Task<IActionResult> CreateDraft()
         {
             //var orderDraft = new Order(req.BuyerId);
-            return Ok(ResponseObject.Succeeded);
+            return Ok();
         }
 
 
         [HttpPatch("cancel/{id}")]
         public async Task<IActionResult> Cancel([FromRoute] int id)
         {
-            return Ok(ResponseObject.Succeeded);
+            return Ok();
         }
 
         [HttpPatch("ship/{id}")]
         public async Task<IActionResult> Ship([FromRoute] int id)
         {
-            return Ok(ResponseObject.Succeeded);
+            return Ok();
         }
     }
 }
