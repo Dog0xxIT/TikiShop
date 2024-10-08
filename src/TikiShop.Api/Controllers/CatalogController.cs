@@ -22,13 +22,15 @@ public class CatalogController : Controller
     [HttpGet("products")]
     public async Task<IActionResult> GetListProducts([FromQuery] GetListProductRequest req)
     {
-        return Ok();
+        var result = await _catalogQueries.GetListProducts(req);
+        return Ok(result);
     }
 
     [HttpGet("products/{id}")]
     public async Task<IActionResult> GetProductById([FromRoute] int id)
     {
-        return Ok();
+        var result = await _catalogQueries.GetProductById(id);
+        return Ok(result);
     }
 
     [HttpPost("products")]
@@ -54,7 +56,8 @@ public class CatalogController : Controller
     [HttpGet("brands")]
     public async Task<IActionResult> GetListBrands([FromQuery] PaginationRequest paginationReq)
     {
-        return Ok();
+        var result = await _catalogQueries.GetListBrands(paginationReq);
+        return Ok(result);
     }
 
     [HttpPost("brands")]
@@ -81,12 +84,14 @@ public class CatalogController : Controller
     [HttpGet("categories/hierarchy")]
     public async Task<IActionResult> GetCategoriesHierarchy()
     {
-        return Ok();
+        var result = await _catalogQueries.GetCategoriesHierarchy();
+        return Ok(result);
     }
 
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories()
     {
-        return Ok();
+        var result = await _catalogQueries.GetCategories();
+        return Ok(result);
     }
 }

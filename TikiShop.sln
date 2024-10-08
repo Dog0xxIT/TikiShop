@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2CA5BE36-4781-491A-8705-CA37C7C38232}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Infrastructure", "src\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj", "{7375E35A-E380-4623-B271-FCB2D41D6FD0}"
 EndProject

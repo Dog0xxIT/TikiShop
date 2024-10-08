@@ -16,13 +16,7 @@ namespace TikiShop.Share.RequestModels.Catalog
 
         public string? Keyword { get; set; }
 
-        public string? Sku { get; set; }
-
-        public string? Name { get; set; }
-
-        public string? Color { get; set; }
-
-        public int? RatingStar { get; set; }
+        public int? Rating { get; set; }
 
         [RegularExpression(@"^(\d+)(\,\d+)*$", ErrorMessage = "A comma-separated list of category IDs")]
         public string? Categories { get; set; }

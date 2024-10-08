@@ -9,24 +9,21 @@ using System.Text;
 using TikiShop.Api.Configurations;
 using TikiShop.Api.Services.EmailService;
 using TikiShop.Api.Services.TokenService;
-using TikiShop.Core.Models;
 using TikiShop.Core.Services.BasketService.Queries;
 using TikiShop.Core.Services.CatalogService.Queries;
 using TikiShop.Core.Services.OrderService.Queries;
 using TikiShop.Infrastructure;
+using TikiShop.Infrastructure.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<SmtpConfig>(builder.Configuration.GetSection(SmtpConfig.SectionName));
-
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(JwtConfig.SectionName));
 
 builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
-
 builder.Services.AddTransient<ITokenService, TokenService>();
-
 builder.Services.AddSingleton<TikiShopDapperContext>();
-builder.Services.AddTransient<ICatalogQueries, CatalogQueries>();
+builder.Services.AddTransient<ICatalogQueries, EfCatalogQueries>();
 builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
 

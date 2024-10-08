@@ -8,5 +8,9 @@ namespace TikiShop.Core.Services.BasketService.Queries
 {
     public class BasketQueries : IBasketQueries
     {
+        public async Task<dynamic> GetBasketByCustomerId(int buyerId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

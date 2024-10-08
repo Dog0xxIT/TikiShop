@@ -17,7 +17,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services
     .AddHttpClient(ClientsConfig.CatalogClient, httpClient =>
         {
-            httpClient.BaseAddress = new Uri("https://localhost:7038");
+            httpClient.BaseAddress = new Uri("https://localhost:7014");
         })
     .AddHttpMessageHandler<CookieHandler>();
 

@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TikiShop.Api.Configurations;
-using TikiShop.Core.Common;
 using TikiShop.Core.Services.BasketService.Queries;
+using TikiShop.Infrastructure.Common;
 using TikiShop.Share.RequestModels.Basket;
 
 namespace TikiShop.Api.Controllers
@@ -31,7 +30,8 @@ namespace TikiShop.Api.Controllers
         [HttpGet("{buyerId}")]
         public async Task<IActionResult> GetBasketByCustomerId(int buyerId)
         {
-            return Ok();
+            var result = await _basketQueries.GetBasketByCustomerId(buyerId);
+            return Ok(result);
         }
 
         [HttpPatch("/addToBakset")]

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TikiShop.Api.Configurations;
-using TikiShop.Core.Models;
+using TikiShop.Infrastructure.Models;
 
 namespace TikiShop.Api.Controllers;
 

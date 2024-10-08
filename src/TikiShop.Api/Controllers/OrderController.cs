@@ -19,21 +19,24 @@ namespace TikiShop.Api.Controllers
         }
 
         [HttpGet("user/{buyerId}")]
-        public async Task<IActionResult> GetOrderByBuyerId([FromRoute] string buyerId)
+        public async Task<IActionResult> GetOrderByBuyerId([FromRoute] int buyerId)
         {
-            return Ok();
+            var result = await _orderQueries.GetOrderByBuyerId(buyerId);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrderById([FromRoute] string id)
+        public async Task<IActionResult> GetOrderById([FromRoute] int id)
         {
-            return Ok();
+            var result = await _orderQueries.GetOrderByBuyerId(id);
+            return Ok(result);
         }
 
         [HttpGet("/cartTypes")]
         public async Task<IActionResult> CartTypes()
         {
-            return Ok();
+            var result = await _orderQueries.CartTypes();
+            return Ok(result);
         }
 
         [HttpPost]

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using TikiShop.Core.Models;
+using TikiShop.Infrastructure.Models;
 
 namespace TikiShop.Infrastructure.SeedData
 {

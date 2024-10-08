@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using TikiShop.Api.Configurations;
-using TikiShop.Core.Models;
+using TikiShop.Infrastructure.Models;
 
 namespace TikiShop.Api.Services.EmailService
 {

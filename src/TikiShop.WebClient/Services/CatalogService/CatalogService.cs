@@ -19,7 +19,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListBrandsResponse>>(
                 clientName: ClientsConfig.CatalogClient,
-                uri: "api/v1/products",
+                uri: "api/v1/catalog/products",
                 queryObj: paginationRequest);
 
             return resultObject.Data;
@@ -29,7 +29,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         {
             var resultObject = await _coreHttpClient.GetAsync<List<GetAllCategoriesResponse>>(
                 clientName: ClientsConfig.CatalogClient,
-                uri: "api/v1/categories/hierarchy");
+                uri: "api/v1/catalog/categories/hierarchy");
 
             return resultObject.Data;
         }
@@ -38,7 +38,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetAllCategoriesResponse>>(
                 clientName: ClientsConfig.CatalogClient,
-                uri: "api/v1/categories");
+                uri: "api/v1/catalog/categories");
 
             return resultObject.Data;
         }
@@ -47,7 +47,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListProductResponse>>(
                  clientName: ClientsConfig.CatalogClient,
-                 uri: "api/v1/products",
+                 uri: "api/v1/catalog/products",
                  queryObj: paginationRequest);
 
             return resultObject.Data;
@@ -58,7 +58,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         {
             return await _coreHttpClient.GetAsync<GetProductByIdResponse>(
                 clientName: ClientsConfig.CatalogClient,
-                uri: $"api/v1/products/{productId}");
+                uri: $"api/v1/catalog/products/{productId}");
         }
     }
 }

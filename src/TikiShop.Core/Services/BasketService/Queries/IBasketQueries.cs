@@ -2,5 +2,5 @@
 
 public interface IBasketQueries
 {
-    
+    Task<dynamic> GetBasketByCustomerId(int buyerId);
 }

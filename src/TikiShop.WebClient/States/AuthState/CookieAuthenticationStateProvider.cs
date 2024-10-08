@@ -36,7 +36,7 @@ public class CookieAuthenticationStateProvider : AuthenticationStateProvider, IA
         // default to not authenticated
         var user = _unauthenticated;
 
-        var httpClient = _clientFactory.CreateClient(ClientsConfig.IdentityClient);
+        var httpClient = _clientFactory.CreateClient(ClientsConfig.CatalogClient);
         var response1 = await httpClient.GetAsync("/api/v1/manageInfo");
 
         if (!response1.IsSuccessStatusCode)
