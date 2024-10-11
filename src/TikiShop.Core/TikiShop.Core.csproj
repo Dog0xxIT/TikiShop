@@ -29,6 +29,7 @@
     <Folder Include="DomainValidations\Basket\" />
     <Folder Include="DomainValidations\Catalog\" />
     <Folder Include="DomainValidations\Order\" />
+    <Folder Include="Enums\" />
     <Folder Include="Services\CatalogService\CommandHandlers\" />
     <Folder Include="Services\OrderService\CommandHandlers\" />
   </ItemGroup>

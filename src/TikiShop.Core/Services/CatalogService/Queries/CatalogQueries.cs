@@ -1,11 +1,11 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
-using TikiShop.Core.RequestModels.Catalog;
-using TikiShop.Core.ResponseModels;
-using TikiShop.Core.ResponseModels.Catalog;
+using TikiShop.Core.Models.RequestModels.Catalog;
+using TikiShop.Core.Models.ResponseModels;
+using TikiShop.Core.Models.ResponseModels.Catalog;
 using TikiShop.Infrastructure;
 
-using PaginationRequest = TikiShop.Core.RequestModels.PaginationRequest;
+using PaginationRequest = TikiShop.Core.Models.RequestModels.PaginationRequest;
 
 namespace TikiShop.Core.Services.CatalogService.Queries
 {

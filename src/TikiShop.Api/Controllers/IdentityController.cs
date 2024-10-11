@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TikiShop.Core.Configurations;
-using TikiShop.Core.RequestModels.Identity;
+using TikiShop.Core.Models.RequestModels.Identity;
 using TikiShop.Core.ResponseModels.Identity;
 using TikiShop.Core.Services.IdentityService;
 using TikiShop.Core.Services.TokenService;
@@ -87,7 +87,7 @@ namespace TikiShop.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest req)
         {
-            var result = await _identityService.Register(req.Email, req.Password);
+            var result = await _identityService.Register(req.UserName, req.Email, req.Password);
             if (!result.Succeeded)
             {
                 return Problem(result.Errors.First());

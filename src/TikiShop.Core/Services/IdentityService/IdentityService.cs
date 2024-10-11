@@ -1,10 +1,14 @@
 ﻿using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using TikiShop.Core.Configurations;
 using TikiShop.Core.Dto;
+using TikiShop.Core.Services.EmailService;
 using TikiShop.Core.Services.TokenService;
 using TikiShop.Infrastructure.Common;
 using TikiShop.Infrastructure.Models;
@@ -40,7 +44,7 @@ namespace TikiShop.Core.Services.IdentityService
             {
                 return ServiceResult.Failed("Invalid Email");
             }
-
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var identityResult = await _userManager.ConfirmEmailAsync(user, code);
             if (!identityResult.Succeeded)
             {
@@ -71,11 +75,12 @@ namespace TikiShop.Core.Services.IdentityService
             return ServiceResult.Success;
         }
 
-        public async Task<ServiceResult> Register(string email, string password)
+        public async Task<ServiceResult> Register(string userName, string email, string password)
         {
             var user = new User
             {
                 Email = email,
+                UserName = userName,
             };
 
             var identityResult = await _userManager.CreateAsync(user, password);
@@ -93,8 +98,7 @@ namespace TikiShop.Core.Services.IdentityService
             }
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var domainName = "localhost";
-            var confirmationLink = $"https://{domainName}?email={email}&code={token}";
+            var confirmationLink = EmailSenderGenerateLink.GenerateConfirmLink(token, email);
             await _emailSender.SendConfirmationLinkAsync(user, user.Email, confirmationLink);
             return ServiceResult.Success;
         }
@@ -133,6 +137,7 @@ namespace TikiShop.Core.Services.IdentityService
 
             return ServiceResult<TokensDto>.Success(new(accessToken, refreshToken));
         }
+
         public async Task<ServiceResult<TokensDto>> RefreshToken(string refreshToken)
         {
             var user = await _userManager.Users
@@ -184,8 +189,7 @@ namespace TikiShop.Core.Services.IdentityService
             }
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var domainName = "localhost";
-            var confirmationLink = $"https://{domainName}?email={email}&code={token}";
+            var confirmationLink = EmailSenderGenerateLink.GenerateConfirmLink(token, email);
             await _emailSender.SendConfirmationLinkAsync(user, user.Email, confirmationLink);
             return ServiceResult.Success;
         }
@@ -199,8 +203,7 @@ namespace TikiShop.Core.Services.IdentityService
             }
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var domainName = "localhost";
-            var passwordResetLink = $"https://{domainName}?email={email}&code={code}";
+            var passwordResetLink = EmailSenderGenerateLink.GenerateResetLink(code, email);
             await _emailSender.SendPasswordResetLinkAsync(user, email, passwordResetLink);
 
             return ServiceResult.Success;

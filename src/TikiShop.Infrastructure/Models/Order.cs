@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using TikiShop.Infrastructure.Common;
 
 namespace TikiShop.Infrastructure.Models
@@ -13,6 +14,7 @@ namespace TikiShop.Infrastructure.Models
         public OrderStatus OrderStatus { get; set; }
         public string Description { get; set; }
 
+        [DeleteBehavior(DeleteBehavior.NoAction)]
         public User Buyer { get; set; }
         public Address Address { get; set; }
         public PaymentMethod Payment { get; set; }

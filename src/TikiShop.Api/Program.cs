@@ -41,6 +41,7 @@ builder.Services
     .AddIdentityCore<User>(options =>
     {
         options.SignIn.RequireConfirmedEmail = true;
+        options.User.RequireUniqueEmail = true;
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.AllowedForNewUsers = true;

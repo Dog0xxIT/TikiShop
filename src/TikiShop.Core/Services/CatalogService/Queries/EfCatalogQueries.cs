@@ -1,19 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using TikiShop.Core.RequestModels.Catalog;
-using TikiShop.Core.ResponseModels;
-using TikiShop.Core.ResponseModels.Catalog;
+using TikiShop.Core.Enums;
+using TikiShop.Core.Models.RequestModels;
 using TikiShop.Infrastructure;
 using TikiShop.Infrastructure.Models;
-using GetListBrandsResponse = TikiShop.Core.ResponseModels.Catalog.GetListBrandsResponse;
-using GetProductByIdResponse = TikiShop.Core.ResponseModels.Catalog.GetProductByIdResponse;
-using PaginationRequest = TikiShop.Core.RequestModels.PaginationRequest;
+using TikiShop.Core.Models.ResponseModels;
+using TikiShop.Core.Models.RequestModels.Catalog;
+using TikiShop.Core.Models.ResponseModels.Catalog;
+using TikiShop.Infrastructure.Common;
 
 namespace TikiShop.Core.Services.CatalogService.Queries
 {
@@ -28,7 +23,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             _logger = logger;
         }
 
-        public async Task<ResponseModels.PaginationResponse<ResponseModels.Catalog.GetListProductResponse>> GetListProducts(GetListProductRequest req)
+        public async Task<PaginationResponse<GetListProductResponse>> GetListProducts(GetListProductRequest req)
         {
             if (req.MinPrice > req.MaxPrice)
             {
@@ -38,7 +33,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             var brands = ParseIds(req.Brands);
             var categories = ParseIds(req.Categories);
 
-            var queryable = _context.Products.AsQueryable();
+            var queryable = _context.Products.AsQueryable().AsNoTracking();
             queryable = ApplyFilters(queryable, req, brands, categories);
             queryable = ApplySorting(queryable, req);
 
@@ -59,7 +54,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     ThumbnailUrl = product.ThumbnailUrl,
                     //ReviewCount = product.ReviewCount,
                     //RatingAverage = product.RatingAverage,
-                    //TotalBuyer = product.TotalBuyer,
+                    // TotalBought = product.TotalBought,
                     Sku = product.Sku,
                     ShortDescription = product.ShortDescription,
                 }).ToList();
@@ -67,7 +62,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             var totalProducts = await _context.Products.CountAsync();
             var totalPage = req.Limit != 0 ? (totalProducts / req.Limit) + 1 : 0;
 
-            var response = new ResponseModels.PaginationResponse<GetListProductResponse>
+            var response = new PaginationResponse<GetListProductResponse>
             {
                 Data = productsDto,
                 Meta = new PaginationMetaDto
@@ -85,12 +80,12 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
         public async Task<GetProductByIdResponse> GetProductById(int id)
         {
-           var product = await _context.Products
-                 .Include(p => p.Brand)
-                 .Include(p => p.Category)
-                 .Include(p => p.ProductVariant)
-                     .ThenInclude(vo => vo.OptionType1)
-                     .SingleOrDefaultAsync(p => p.Id == id);
+            var product = await _context.Products
+                  .Include(p => p.Brand)
+                  .Include(p => p.Category)
+                  .Include(p => p.ProductVariant)
+                      .ThenInclude(vo => vo.OptionType1)
+                      .SingleOrDefaultAsync(p => p.Id == id);
 
             if (product is null)
             {
@@ -152,7 +147,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return response;
         }
 
-        public async Task<ResponseModels.PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
+        public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
         {
             var queryable = _context.Brands
                 .Skip(req.Page)
@@ -168,7 +163,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 (totalBrand / req.Limit) + 1 : 0;
             var brandsDto = brands.Adapt<List<GetListBrandsResponse>>();
 
-            var response = new ResponseModels.PaginationResponse<GetListBrandsResponse>
+            var response = new PaginationResponse<GetListBrandsResponse>
             {
                 Data = brandsDto,
                 Meta = new PaginationMetaDto
@@ -183,6 +178,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
             return response;
         }
+
 
         public async Task<List<GetAllCategoriesResponse>> GetCategoriesHierarchy()
         {
@@ -217,7 +213,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 Childs = new(),
             }).ToList();
 
-            var response = new ResponseModels.PaginationResponse<GetAllCategoriesResponse>
+            var response = new PaginationResponse<GetAllCategoriesResponse>
             {
                 Data = categoriesDto,
                 Meta = new PaginationMetaDto
@@ -235,27 +231,17 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
         private IQueryable<Product> ApplySorting(IQueryable<Product> queryable, GetListProductRequest req)
         {
-            var sortByList = new Dictionary<string, string>
+            queryable = req.SortBy switch
             {
-                ["id"] = nameof(Product.Id),
-                ["price"] = nameof(Product.Price),
-                ["date_modified"] = nameof(Product.LastModified),
-            };
-
-            return sortByList[req.SortBy] switch
-            {
-                nameof(Product.Id) => req.SortDescending
-                    ? queryable.OrderByDescending(product => product.Id)
-                    : queryable.OrderBy(product => product.Id),
-                nameof(Product.LastModified) => req.SortDescending
-                    ? queryable.OrderByDescending(product => product.LastModified)
-                    : queryable.OrderBy(product => product.LastModified),
-                nameof(Product.Price) => req.SortDescending
-                    ? queryable.OrderByDescending(product => product.Price)
-                    : queryable.OrderBy(product => product.Price),
+                SortBy.Id => queryable.OrderBy(product => product.Id),
+                SortBy.Price => queryable.OrderBy(product => product.Id),
+                SortBy.DateModified => queryable.OrderBy(product => product.Id),
                 _ => queryable
             };
+
+            return req.SortDescending ? queryable.OrderByDescending(product => product.LastModified) : queryable;
         }
+
         private List<int> ParseIds(string? ids)
         {
             return string.IsNullOrEmpty(ids) ?
@@ -279,7 +265,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 queryable = queryable.Where(product => categories.Contains(product.CategoryId));
 
             if (!string.IsNullOrEmpty(req.Keyword))
-                queryable = queryable.Where(product => product.Name.Contains(req.Keyword) || product.Description.Contains(req.Keyword));
+                queryable = queryable.Where(product => product.Name.Contains(req.Keyword));
 
             return queryable;
         }

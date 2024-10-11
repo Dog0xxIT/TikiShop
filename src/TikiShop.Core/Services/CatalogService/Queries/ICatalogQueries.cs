@@ -1,8 +1,7 @@
-﻿using TikiShop.Core.RequestModels.Catalog;
-using TikiShop.Core.ResponseModels;
-using TikiShop.Core.ResponseModels.Catalog;
-
-using PaginationRequest = TikiShop.Core.RequestModels.PaginationRequest;
+﻿using TikiShop.Core.Models.RequestModels;
+using TikiShop.Core.Models.RequestModels.Catalog;
+using TikiShop.Core.Models.ResponseModels;
+using TikiShop.Core.Models.ResponseModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.Queries;
 

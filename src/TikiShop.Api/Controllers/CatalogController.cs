@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using TikiShop.Core.RequestModels;
-using TikiShop.Core.RequestModels.Catalog;
+using TikiShop.Core.Models.RequestModels;
+using TikiShop.Core.Models.RequestModels.Catalog;
 using TikiShop.Core.Services.CatalogService.Queries;
 
 namespace TikiShop.Api.Controllers;

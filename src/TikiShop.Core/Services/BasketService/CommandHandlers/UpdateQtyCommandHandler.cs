@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using TikiShop.Core.RequestModels.Catalog;
+using TikiShop.Core.Models.RequestModels.Catalog;
 
 namespace TikiShop.Core.Services.BasketService.CommandHandlers
 {

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using TikiShop.Core.RequestModels.Order;
+using TikiShop.Core.Models.RequestModels.Order;
 
 namespace TikiShop.Core.Services.OrderService.CommandHandlers;
 
