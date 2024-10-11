@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using TikiShop.Core.Dto;
-using TikiShop.Core.RequestModels.Identity;
 
 namespace TikiShop.Core.Services.IdentityService;
 

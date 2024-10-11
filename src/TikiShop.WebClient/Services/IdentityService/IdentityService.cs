@@ -30,19 +30,20 @@ namespace TikiShop.WebClient.Services.IdentityService
                 reqObj: request);
         }
 
-        public async Task<ResultObject<ResponseObject>> Login(SignInRequest request)
+        public async Task<ResultObject> Login(SignInRequest request)
         {
-            return await _coreHttpClient.PostAsync<ResponseObject>(
+            return await _coreHttpClient.PostAsync(
                 clientName: "TikiShopApi",
                 uri: "/api/v1/login",
                 reqObj: request);
         }
 
-        public async Task<ResultObject<ResponseObject>> Logout()
+        public async Task<ResultObject> Logout()
         {
-            return await _coreHttpClient.GetAsync<ResponseObject>(
+            return await _coreHttpClient.PostAsync(
                 clientName: "TikiShopApi",
-                uri: "/api/v1/logout");
+                uri: "/api/v1/logout",
+                reqObj: null);
         }
 
         public async Task<ResultObject<ResponseObject>> ResendConfirmEmail(ResendConfirmEmailRequest request)

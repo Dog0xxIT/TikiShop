@@ -28,6 +28,7 @@ builder.Services.AddTransient<ICatalogQueries, EfCatalogQueries>();
 builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
+builder.Services.AddTransient<IBasketQueries, EfBasketQueries>();
 
 builder.Services.AddMediatR(cfg =>
 {
@@ -52,7 +53,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services
-    .AddAuthentication()
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddCookie(IdentityConstants.ExternalScheme)
     .AddJwtBearer(options =>
         {

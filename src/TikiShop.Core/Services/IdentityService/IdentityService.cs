@@ -118,11 +118,13 @@ namespace TikiShop.Core.Services.IdentityService
                 return ServiceResult<TokensDto>.Failed("Password incorrect");
             }
 
+            var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
                 new (ClaimTypes.Sid, user.Id.ToString()),
                 new (ClaimTypes.Email, user.Email!),
             };
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
             var accessToken = _tokenService.GenerateAccessToken(claims);
             var refreshToken = _tokenService.GenerateRefreshToken();

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TikiShop.Core.Configurations;
 using TikiShop.Core.Models.RequestModels.Identity;
-using TikiShop.Core.ResponseModels.Identity;
+using TikiShop.Core.Models.ResponseModels.Identity;
 using TikiShop.Core.Services.IdentityService;
 using TikiShop.Core.Services.TokenService;
 using TikiShop.Infrastructure.Models;

@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using TikiShop.Core.Enums;
+using TikiShop.Core.Models.RequestModels;
 
-namespace TikiShop.Core.RequestModels.Catalog
+namespace TikiShop.Core.Models.RequestModels.Catalog
 {
     public class GetListProductRequest : PaginationRequest
     {

@@ -6,8 +6,8 @@ namespace TikiShop.WebClient.States.AuthState
 {
     public interface IAccountManagement
     {
-        public Task<ResultObject<ResponseObject>> Login(SignInRequest req);
+        public Task<ResultObject> Login(SignInRequest req);
 
-        public Task<ResultObject<ResponseObject>> Logout();
+        public Task<ResultObject> Logout();
     }
 }

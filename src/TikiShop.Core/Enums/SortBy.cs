@@ -1,4 +1,5 @@
-﻿namespace TikiShop.Core.Enums;
+﻿
+namespace TikiShop.Core.Enums;
 
 public enum SortBy
 {

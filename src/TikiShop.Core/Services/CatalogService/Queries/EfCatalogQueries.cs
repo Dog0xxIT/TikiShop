@@ -81,53 +81,65 @@ namespace TikiShop.Core.Services.CatalogService.Queries
         public async Task<GetProductByIdResponse> GetProductById(int id)
         {
             var product = await _context.Products
-                  .Include(p => p.Brand)
-                  .Include(p => p.Category)
-                  .Include(p => p.ProductVariant)
-                      .ThenInclude(vo => vo.OptionType1)
-                      .SingleOrDefaultAsync(p => p.Id == id);
+                .AsNoTracking()
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .Include(product => product.ProductVariant)
+                .SingleOrDefaultAsync(p => p.Id == id);
 
             if (product is null)
             {
                 return new();
             }
 
-            //var productOptions = product?.ProductVariant?.SelectMany(pv => pv.Options);
-            //var groupByOptionType = productOptions?.GroupBy(po => po.OptionType);
-            //var configOptions = groupByOptionType?.Select(g =>
-            //    new GetProductByIdResponse.ConfigOption
-            //    {
-            //        OptionTypeId = g.Key.Id,
-            //        OptionType = g.Key.Name,
-            //        Values = g.Select(i => i.Value).ToList()
-            //    }).ToList() ?? new();
+            var configOptions = new List<GetProductByIdResponse.ConfigOption>();
 
+            if (product.ProductVariant != null)
+            {
+                var optionTypeId1 = product.ProductVariant.FirstOrDefault()?.OptionTypeId1;
+                var optionTypeId2 = product.ProductVariant.FirstOrDefault()?.OptionTypeId2;
 
-            var productVariants = product?.ProductVariant?.Select(productVariant =>
-                new GetProductByIdResponse.Variant
+                var options1 = await _context.OptionTypes
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(i => i.Id == optionTypeId1);
+                if (options1 != null)
                 {
-                    ProductId = productVariant.ProductId,
-                    ProductVariantId = productVariant.Id,
-                    Sku = productVariant.Sku,
-                    //AvailableStock = productVariant.AvailableStock,
-                    Price = productVariant.Price,
-                    //Option1 = productVariant?.Options?.ElementAtOrDefault(0)?.Value ?? "",
-                    //Option2 = productVariant?.Options?.ElementAtOrDefault(1)?.Value ?? "",
-                }).ToList() ?? new();
+                    configOptions.Add(new GetProductByIdResponse.ConfigOption
+                    {
+                        OptionCode = options1.Code,
+                        OptionName = options1.Name,
+                        Values = product.ProductVariant.Select(pv => pv.OptionValue1).ToList(),
+                    });
+                }
+
+                var options2 = await _context.OptionTypes
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(i => i.Id == optionTypeId2);
+                if (options2 != null)
+                {
+                    configOptions.Add(new GetProductByIdResponse.ConfigOption
+                    {
+                        OptionCode = options2.Code,
+                        OptionName = options2.Name,
+                        Values = product.ProductVariant.Select(pv => pv.OptionValue2).ToList()!,
+                    });
+                }
+            }
+
 
             var response = new GetProductByIdResponse
             {
-                Id = product!.Id,
+                Id = product.Id,
                 Name = product.Name,
-                EmbedDescription = product.Description,
+                Description = product.Description ?? "",
                 Price = product.Price,
-                ThumbnailUrl = product.ThumbnailUrl,
+                ThumbnailUrl = product.ThumbnailUrl ?? "",
                 //Discount = product.Discount,
                 //ReviewCount = product.ReviewCount,
                 //RatingAverage = product.RatingAverage,
-                //TotalBuyer = product.TotalBuyer,
+                //TotalBought = product.TotalBought,
                 Sku = product.Sku,
-                ShortDescription = product.ShortDescription,
+                ShortDescription = product.ShortDescription ?? "",
                 Brand = new()
                 {
                     Id = product.BrandId,
@@ -140,8 +152,17 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     Name = product?.Category.Name ?? "",
                     ThumbnailUrl = product?.Category.ThumbnailUrl ?? "",
                 },
-                //Variants = productVariants,
-                //ConfigOptions = configOptions
+                Variants = product!.ProductVariant
+                    ?.Select(pv => new GetProductByIdResponse.Variant
+                    {
+                        ProductId = product.Id,
+                        Price = pv.Price,
+                        AvailableStock = pv.Quantity,
+                        Option1 = pv.OptionValue1,
+                        Option2 = pv.OptionValue2
+                    })
+                    ?.ToList() ?? new(),
+                ConfigOptions = configOptions
             };
 
             return response;

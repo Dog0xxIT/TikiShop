@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public string ShortDescription { get; set; }
-        public string EmbedDescription { get; set; }
+        public string Description { get; set; }
         public double Price { get; set; }
         public string ThumbnailUrl { get; set; }
         public double Discount { get; set; }
@@ -13,7 +13,7 @@
         public double RatingAverage { get; set; }
         public _Brand Brand { get; set; } = new();
         public _Category Category { get; set; } = new();
-        public int TotalBuyer { get; set; }
+        public int TotalBought { get; set; }
         public string Sku { get; set; }
         public List<Variant> Variants { get; set; } = new();
         public List<ConfigOption> ConfigOptions { get; set; } = new();
@@ -45,8 +45,8 @@
 
         public class ConfigOption
         {
-            public int OptionTypeId { get; set; }
-            public string OptionType { get; set; }
+            public string OptionName { get; set; }
+            public string OptionCode { get; set; }
             public List<string> Values { get; set; }
         }
     }
