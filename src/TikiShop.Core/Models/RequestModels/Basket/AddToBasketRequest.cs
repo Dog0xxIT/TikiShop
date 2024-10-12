@@ -4,12 +4,9 @@ using TikiShop.Core.Services;
 
 namespace TikiShop.Core.Models.RequestModels.Basket
 {
-    public class AddToBasketRequest : IRequest<ServiceResult>
+    public class AddToBasketRequest
     {
         [Required]
         public int ProductId { get; set; }
-
-        [Required]
-        public int Quantity { get; set; }
     }
 }

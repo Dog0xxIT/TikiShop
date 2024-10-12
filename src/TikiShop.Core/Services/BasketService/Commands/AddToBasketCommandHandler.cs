@@ -10,20 +10,20 @@ using TikiShop.Core.Services.CatalogService.Queries;
 using TikiShop.Infrastructure;
 using TikiShop.Infrastructure.Models;
 
-namespace TikiShop.Core.Services.BasketService.CommandHandlers
+namespace TikiShop.Core.Services.BasketService.Commands
 {
-    internal class UpdateQuantityCommandHandler : IRequestHandler<UpdateQuantityCommand, ServiceResult>
+    internal class AddToBasketCommandHandler : IRequestHandler<AddToBasketCommand, ServiceResult>
     {
         private readonly TikiShopDbContext _context;
-        private readonly ILogger<EfCatalogQueries> _logger;
+        private readonly ILogger<AddToBasketCommandHandler> _logger;
 
-        public UpdateQuantityCommandHandler(TikiShopDbContext context, ILogger<EfCatalogQueries> logger)
+        public AddToBasketCommandHandler(ILogger<AddToBasketCommandHandler> logger, TikiShopDbContext context)
         {
-            _context = context;
             _logger = logger;
+            _context = context;
         }
 
-        public async Task<ServiceResult> Handle(UpdateQuantityCommand request, CancellationToken cancellationToken)
+        public async Task<ServiceResult> Handle(AddToBasketCommand request, CancellationToken cancellationToken)
         {
             var basket = await _context.Baskets
                 .Include(b => b.Items)
@@ -38,35 +38,21 @@ namespace TikiShop.Core.Services.BasketService.CommandHandlers
                 return ServiceResult.Failed("Invalid Request");
             }
 
+            var isExistBasketItem = basket!.Items.Any(i => i.ProductId == request.ProductId);
+            if (isExistBasketItem)
+            {
+                return ServiceResult.Failed("Invalid Request");
+            }
+
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var basketItem = basket!.Items.SingleOrDefault(i => i.ProductId == request.ProductId);
-                if (basketItem is null)
+                basket.Items.Add(new BasketItem
                 {
-                    if (request.Quantity <= 0)
-                    {
-                        return ServiceResult.Success;
-                    }
-
-                    basket.Items.Add(new BasketItem
-                    {
-                        ProductId = request.ProductId,
-                        BasketId = basket.Id,
-                        Quantity = request.Quantity
-                    });
-                }
-                else
-                {
-                    if (request.Quantity <= 0)
-                    {
-                        basket.Items.Remove(basketItem);
-                    }
-                    else
-                    {
-                        basketItem.Quantity = request.Quantity;
-                    }
-                }
+                    ProductId = request.ProductId,
+                    BasketId = basket.Id,
+                    Quantity = 1
+                });
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -76,7 +62,7 @@ namespace TikiShop.Core.Services.BasketService.CommandHandlers
             {
                 _logger.LogError(ex.Message);
                 await transaction.RollbackAsync();
-                return ServiceResult.Failed();
+                return ServiceResult.Failed("Error");
             }
         }
     }

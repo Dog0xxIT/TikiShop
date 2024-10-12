@@ -15,6 +15,7 @@ using TikiShop.Core.Services.OrderService.Queries;
 using TikiShop.Core.Services.TokenService;
 using TikiShop.Infrastructure;
 using TikiShop.Infrastructure.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,9 +31,10 @@ builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
 builder.Services.AddTransient<IBasketQueries, EfBasketQueries>();
 
+var assemblies = Assembly.Load("TikiShop.Core");
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssemblyContaining(typeof(Program));
+    cfg.RegisterServicesFromAssemblies(assemblies);
 });
 
 builder.Services.AddDbContext<TikiShopDbContext>(options =>
