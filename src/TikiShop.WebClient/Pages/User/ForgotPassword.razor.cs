@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TikiShop.Shared.RequestModels.Identity;
 using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Identity;
 
 namespace TikiShop.WebClient.Pages.User;
 

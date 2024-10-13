@@ -1,11 +1,9 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Logging;
-using TikiShop.Core.Models.RequestModels.Catalog;
-using TikiShop.Core.Models.ResponseModels;
-using TikiShop.Core.Models.ResponseModels.Catalog;
 using TikiShop.Infrastructure;
-
-using PaginationRequest = TikiShop.Core.Models.RequestModels.PaginationRequest;
+using TikiShop.Shared.RequestModels;
+using TikiShop.Shared.RequestModels.Catalog;
+using TikiShop.Shared.ResponseModels;
+using TikiShop.Shared.ResponseModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.Queries
 {
@@ -27,18 +25,18 @@ namespace TikiShop.Core.Services.CatalogService.Queries
         {
             using var conn = _dapperContext.CreateConnection();
             var sql = $"""
-                       SELECT TOP ({req.Limit}) [Id], [Sku], [Name], [Description], [ShortDescription], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [BrandId], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
+                       SELECT TOP ({req.Limit}) [Id], [Sku], [Name], [Description], [ShortDescription], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
                        FROM Products
-                            LEFT JOIN (SELECT OI.ProductId, SUM(OI.Units) TotalBuy
+                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Units) TotalBuy
                                 FROM OrderItems OI
-                              GROUP BY OI.ProductId) AS B ON Products.Id = B.ProductId
+                              GROUP BY OI.BasketItemId) AS B ON Products.Id = B.BasketItemId
                        WHERE Products.IsDeleted = 0
                        ORDER BY Id;
-                       SELECT TOP (100) [Id], [Sku], [Name], [Description], [ShortDescription], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [BrandId], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
+                       SELECT TOP (100) [Id], [Sku], [Name], [Description], [ShortDescription], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
                        FROM Products
-                            LEFT JOIN (SELECT OI.ProductId, SUM(OI.Units) TotalBuy
+                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Units) TotalBuy
                                 FROM OrderItems OI
-                              GROUP BY OI.ProductId) AS B ON Products.Id = B.ProductId
+                              GROUP BY OI.BasketItemId) AS B ON Products.Id = B.BasketItemId
                        WHERE Products.IsDeleted = 0
                        ORDER BY Id
                        """;

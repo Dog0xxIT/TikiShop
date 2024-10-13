@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Mapster;
-using Microsoft.EntityFrameworkCore;
-using TikiShop.Core.Enums;
-using TikiShop.Core.Models.RequestModels;
+﻿using Mapster;
 using TikiShop.Infrastructure;
 using TikiShop.Infrastructure.Models;
-using TikiShop.Core.Models.ResponseModels;
-using TikiShop.Core.Models.RequestModels.Catalog;
-using TikiShop.Core.Models.ResponseModels.Catalog;
-using TikiShop.Infrastructure.Common;
+using TikiShop.Shared.Enums;
+using TikiShop.Shared.RequestModels;
+using TikiShop.Shared.RequestModels.Catalog;
+using TikiShop.Shared.ResponseModels;
+using TikiShop.Shared.ResponseModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.Queries
 {

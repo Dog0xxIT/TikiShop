@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using TikiShop.WebClient.Models.ResponseModels.Catalog;
+using TikiShop.Shared.ResponseModels.Catalog;
 using TikiShop.WebClient.Models.ViewModels;
 
 namespace TikiShop.WebClient.Pages.Product;
@@ -14,16 +14,13 @@ public partial class Detail
     private int _quantity;
     protected override async Task OnInitializedAsync()
     {
-        
         _productInfo = new()
         {
             Brand = new(),
             Category = new(),
         };
 
-        var resultObject = await CatalogService.GetProductById(ProductId);
-
-        _productInfo = resultObject.Data;
+        _productInfo = await CatalogService.GetProductById(ProductId);
 
         _breadcrumbItems = new List<BreadcrumbItem>
         {

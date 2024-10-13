@@ -1,13 +1,10 @@
 ﻿using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using TikiShop.Core.Configurations;
 using TikiShop.Core.Dto;
+using TikiShop.Core.Services.BasketService.Commands;
 using TikiShop.Core.Services.EmailService;
 using TikiShop.Core.Services.TokenService;
 using TikiShop.Infrastructure.Common;
@@ -22,18 +19,21 @@ namespace TikiShop.Core.Services.IdentityService
         private readonly IEmailSender<User> _emailSender;
         private readonly ITokenService _tokenService;
         private readonly JwtConfig _jwtConfig;
+        private readonly IMediator _mediator;
 
         public IdentityService(
             UserManager<User> userManager,
             ILogger<IdentityService> logger,
             IEmailSender<User> emailSender,
             ITokenService tokenService,
-            IOptions<JwtConfig> jwtOptions)
+            IOptions<JwtConfig> jwtOptions,
+            IMediator mediator)
         {
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
             _tokenService = tokenService;
+            _mediator = mediator;
             _jwtConfig = jwtOptions.Value;
         }
 
@@ -97,6 +97,14 @@ namespace TikiShop.Core.Services.IdentityService
                 return ServiceResult.Failed(errors);
             }
 
+            // Create Basket For User
+            var userId = await _userManager.GetUserIdAsync(user);
+            var serviceResult = await _mediator.Send(new CreateBasketCommand(Convert.ToInt32(userId)));
+            if (!serviceResult.Succeeded)
+            {
+                return ServiceResult.Failed(serviceResult.Errors);
+            }
+
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = EmailSenderGenerateLink.GenerateConfirmLink(token, email);
             await _emailSender.SendConfirmationLinkAsync(user, user.Email, confirmationLink);
@@ -110,6 +118,13 @@ namespace TikiShop.Core.Services.IdentityService
             {
                 return ServiceResult<TokensDto>.Failed("Invalid Email");
             }
+
+            var isConfirmEmail = await _userManager.IsEmailConfirmedAsync(user);
+            if (!isConfirmEmail)
+            {
+                return ServiceResult<TokensDto>.Failed("Please Confirm Email");
+            }
+
             // Use cookies await _signInManager.CheckPasswordSignInAsync(user, req.Password, req.RememberLogin); 
             // Use token    
             var isMatch = await _userManager.CheckPasswordAsync(user, password);

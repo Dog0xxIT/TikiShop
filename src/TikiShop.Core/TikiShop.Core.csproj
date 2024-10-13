@@ -29,13 +29,11 @@
     <Folder Include="DomainValidations\Basket\" />
     <Folder Include="DomainValidations\Catalog\" />
     <Folder Include="DomainValidations\Order\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Services\CatalogService\Commands\" />
-    <Folder Include="Services\OrderService\Commands\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj" />
+    <ProjectReference Include="..\TikiShop.Shared\TikiShop.Shared.csproj" />
   </ItemGroup>
 
 </Project>

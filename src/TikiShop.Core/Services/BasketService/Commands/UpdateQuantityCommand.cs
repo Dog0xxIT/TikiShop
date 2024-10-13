@@ -1,5 +1,3 @@
-﻿using MediatR;
+﻿namespace TikiShop.Core.Services.BasketService.Commands;
 
-namespace TikiShop.Core.Services.BasketService.Commands;
-
-public record UpdateQuantityCommand(int UserId, int ProductId, int Quantity) : IRequest<ServiceResult>;
+public record UpdateQuantityCommand(int UserId, int ProductId, int? ProductVariantId, int Quantity) : IRequest<ServiceResult>;

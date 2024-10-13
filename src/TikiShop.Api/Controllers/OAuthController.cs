@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using TikiShop.Core.Configurations;
-using TikiShop.Infrastructure.Models;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace TikiShop.Api.Controllers;
 
 [ApiController]
-[Route("/OAuth")]
+[Route("")]
 public class OAuthController : Controller
 {
     private readonly UserManager<User> _userManager;
@@ -31,7 +29,7 @@ public class OAuthController : Controller
     }
 
     [HttpPost]
-    [Route("externalLogin")]
+    [Route("external-login")]
     public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
     {
         var authSchemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
@@ -41,12 +39,13 @@ public class OAuthController : Controller
         }
 
         var domainName = HttpContext.Request.Host.Value;
-        var redirectUrl = $"{domainName}/signin-google?{returnUrl}";
+        var redirectUrl = $"https://{domainName}/signin-google?returnUrl={returnUrl}";
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         //properties.AllowRefresh = true;
         return Challenge(properties, provider);
     }
 
+    [Authorize(AuthenticationSchemes = GoogleDefaults.AuthenticationScheme)]
     [HttpGet]
     [Route("signin-google")]
     public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null)
@@ -72,6 +71,5 @@ public class OAuthController : Controller
         }
 
         return Redirect(returnUrl ?? "/");
-        //return Ok(ResponseObject.Succeeded);
     }
 }

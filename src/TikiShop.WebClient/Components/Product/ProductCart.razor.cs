@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TikiShop.Shared.RequestModels.Basket;
+using TikiShop.Shared.ResponseModels.Catalog;
 using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Basket;
-using TikiShop.WebClient.Models.ResponseModels.Catalog;
 
 namespace TikiShop.WebClient.Components.Product;
 
@@ -14,12 +14,12 @@ public partial class ProductCart
 
     private async Task OnClickAddToCartButton(int productId)
     {
-        var req = new AddToBasketRequest
+        var req = new UpdateBasketItemRequest
         {
             ProductId = productId,
             Quantity = 1,
         };
-        var resultObject = await _basketService.AddToBasket(req);
+        var resultObject = await _basketService.UpdateBasketItem(req);
         if (resultObject.ResultCode.Equals(ResultCode.Success))
         {
             _notificatioRef.Show(

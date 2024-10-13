@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using TikiShop.Infrastructure;
+﻿using TikiShop.Infrastructure;
+using TikiShop.Shared.ResponseModels.Basket;
 
 namespace TikiShop.Core.Services.BasketService.Queries
 {
@@ -15,12 +14,42 @@ namespace TikiShop.Core.Services.BasketService.Queries
             _logger = logger;
         }
 
-        public async Task<dynamic> GetBasketByCustomerId(int buyerId)
+        public async Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId)
         {
-            var result = await _context.Baskets
+            var result = new GetBasketByCustomerIdResponse
+            {
+                BuyerId = buyerId,
+                Total = 0
+            };
+
+            var basket = await _context.Baskets
                 .AsNoTracking()
-                .Include(b => b.Items)
+                .Select(b => new { Id = b.Id, BuyerId = b.BuyerId })
                 .SingleOrDefaultAsync(b => b.BuyerId == buyerId);
+
+            if (basket is null)
+            {
+                return result;
+            }
+
+            var basketItems = await _context.BasketItems
+                .AsNoTracking()
+                .Where(bi => bi.BasketId == basket.Id)
+                .Include(bi => bi.Product)
+                .Include(bi => bi.ProductVariant)
+                .Select(bi => new GetBasketByCustomerIdResponse.Item
+                {
+                    Id = bi.Id,
+                    ProductId = bi.ProductId,
+                    ProductVariantId = bi.ProductVariantId,
+                    Quantity = bi.Quantity,
+                    PictureUrl = bi.Product.ThumbnailUrl ?? "",
+                    ProductName = bi.Product.Name,
+                    ProductVariantName = bi.ProductVariantId != null ? bi.ProductVariant!.Name : "",
+                }).ToListAsync();
+
+            result.Items.AddRange(basketItems);
+
             return result;
         }
     }

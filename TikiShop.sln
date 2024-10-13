@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Api", "src\TikiSho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Core", "src\TikiShop.Core\TikiShop.Core.csproj", "{25265182-6483-46EF-9748-5C8F73383FDE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Shared", "src\TikiShop.Shared\TikiShop.Shared.csproj", "{B038F761-2B30-4707-9F81-7241D9D2A92A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{25265182-6483-46EF-9748-5C8F73383FDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25265182-6483-46EF-9748-5C8F73383FDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25265182-6483-46EF-9748-5C8F73383FDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B038F761-2B30-4707-9F81-7241D9D2A92A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B038F761-2B30-4707-9F81-7241D9D2A92A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B038F761-2B30-4707-9F81-7241D9D2A92A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B038F761-2B30-4707-9F81-7241D9D2A92A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +53,7 @@ Global
 		{D806520F-0501-44DC-A1F5-586D6E2EBACE} = {2CA5BE36-4781-491A-8705-CA37C7C38232}
 		{449D40EA-7053-47D8-9E72-3712C6B76A60} = {2CA5BE36-4781-491A-8705-CA37C7C38232}
 		{25265182-6483-46EF-9748-5C8F73383FDE} = {2CA5BE36-4781-491A-8705-CA37C7C38232}
+		{B038F761-2B30-4707-9F81-7241D9D2A92A} = {2CA5BE36-4781-491A-8705-CA37C7C38232}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BC1CD47A-4253-4E55-9CE8-79CCECB2C024}

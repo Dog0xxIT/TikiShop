@@ -1,15 +1,5 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using TikiShop.Core.Configurations;
-using TikiShop.Core.Models.RequestModels.Identity;
-using TikiShop.Core.Models.ResponseModels.Identity;
-using TikiShop.Core.Services.IdentityService;
-using TikiShop.Core.Services.TokenService;
-using TikiShop.Infrastructure.Models;
+﻿using TikiShop.Shared.RequestModels.Identity;
+using TikiShop.Shared.ResponseModels.Identity;
 
 namespace TikiShop.Api.Controllers
 {
@@ -40,18 +30,23 @@ namespace TikiShop.Api.Controllers
             _jwtConfig = jwtOptions.Value;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailRequest req)
         {
             var result = await _identityService.ConfirmEmail(req.Email, req.Code);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             return Ok();
         }
 
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("manageInfo")]
         public IActionResult ManageInfo()
@@ -68,6 +63,9 @@ namespace TikiShop.Api.Controllers
             });
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
@@ -76,7 +74,7 @@ namespace TikiShop.Api.Controllers
             var result = await _identityService.Logout(email ?? "");
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
             this.HttpContext.Response.Cookies.Delete("access-token");
             this.HttpContext.Response.Cookies.Delete("refresh-token");
@@ -84,25 +82,30 @@ namespace TikiShop.Api.Controllers
             return Ok();
         }
 
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest req)
         {
             var result = await _identityService.Register(req.UserName, req.Email, req.Password);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
-            return Ok();
+            return Created();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest req)
         {
             var result = await _identityService.Login(req.Email, req.Password);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
             var tokensDto = result.Data!;
             SetTokenInCookie(tokensDto.AccessToken, tokensDto.RefreshToken);
@@ -110,6 +113,9 @@ namespace TikiShop.Api.Controllers
             return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
@@ -117,37 +123,44 @@ namespace TikiShop.Api.Controllers
             var result = await _identityService.RefreshToken(refreshToken ?? "");
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
             var tokensDto = result.Data!;
             SetTokenInCookie(tokensDto.AccessToken, tokensDto.RefreshToken);
             return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("resendConfirmEmail")]
         public async Task<IActionResult> ResendConfirmEmail(ResendConfirmEmailRequest req)
         {
             var result = await _identityService.ResendConfirmEmail(req.Email);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("forgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest req)
         {
             var result = await _identityService.ForgotPassword(req.Email);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             return Ok();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("resetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest req)
         {
@@ -155,7 +168,7 @@ namespace TikiShop.Api.Controllers
             var result = await _identityService.ResetPassword(userId ?? "", req.ResetCode, req.NewPassword);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             // Logout
@@ -163,7 +176,7 @@ namespace TikiShop.Api.Controllers
             result = await _identityService.Logout(email ?? "");
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
             this.HttpContext.Response.Cookies.Delete("access-token");
             this.HttpContext.Response.Cookies.Delete("refresh-token");
@@ -171,6 +184,10 @@ namespace TikiShop.Api.Controllers
             return Ok();
         }
 
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest req)
@@ -179,7 +196,7 @@ namespace TikiShop.Api.Controllers
             var result = await _identityService.ChangePassword(userId ?? "", req.OldPassword, req.NewPassword);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             // Logout

@@ -1,7 +1,7 @@
-﻿using TikiShop.Core.Models.RequestModels;
-using TikiShop.Core.Models.RequestModels.Catalog;
-using TikiShop.Core.Models.ResponseModels;
-using TikiShop.Core.Models.ResponseModels.Catalog;
+﻿using TikiShop.Shared.RequestModels;
+using TikiShop.Shared.RequestModels.Catalog;
+using TikiShop.Shared.ResponseModels;
+using TikiShop.Shared.ResponseModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.Queries;
 

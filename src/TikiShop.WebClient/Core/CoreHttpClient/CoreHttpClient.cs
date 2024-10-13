@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Web;
 using Newtonsoft.Json;
-using TikiShop.WebClient.Models.ResponseModels.Common;
+using TikiShop.Shared.ResponseModels;
 
 
 namespace TikiShop.WebClient.Core.CoreHttpClient;

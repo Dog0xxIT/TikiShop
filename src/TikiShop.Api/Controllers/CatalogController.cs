@@ -1,8 +1,8 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using TikiShop.Core.Models.RequestModels;
-using TikiShop.Core.Models.RequestModels.Catalog;
-using TikiShop.Core.Services.CatalogService.Queries;
+﻿using Org.BouncyCastle.Ocsp;
+using TikiShop.Core.Services.BasketService.Commands;
+using TikiShop.Core.Services.CatalogService.Commands;
+using TikiShop.Shared.RequestModels;
+using TikiShop.Shared.RequestModels.Catalog;
 
 namespace TikiShop.Api.Controllers;
 
@@ -19,6 +19,7 @@ public class CatalogController : Controller
         _catalogQueries = catalogQueries;
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("products")]
     public async Task<IActionResult> GetListProducts([FromQuery] GetListProductRequest req)
     {
@@ -26,6 +27,7 @@ public class CatalogController : Controller
         return Ok(result);
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("products/{id}")]
     public async Task<IActionResult> GetProductById([FromRoute] int id)
     {
@@ -33,26 +35,58 @@ public class CatalogController : Controller
         return Ok(result);
     }
 
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPost("products")]
     public async Task<IActionResult> CreateProduct(CreateProductRequest req)
     {
-        return Ok();
+        var command = new CreateProductCommand(
+            req.Sku, req.Name, req.Description,
+            req.ShortDescription, req.Price, req.ThumbnailUrl,
+            req.Quantity, req.CategoryId, req.BrandId);
+        var result = await _mediator.Send(command);
+        if (!result.Succeeded)
+        {
+            return Problem(result.Errors.FirstOrDefault());
+        }
+        return Created();
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPut("products/{id}")]
     public async Task<IActionResult> UpdateProduct(
         [FromRoute] int id,
         [FromBody] UpdateProductRequest req)
     {
+        var command = new UpdateProductCommand(
+            id, req.Sku, req.Name,
+            req.Description, req.ShortDescription,
+            req.Price, req.ThumbnailUrl,
+            req.Quantity, req.CategoryId, req.BrandId);
+        var result = await _mediator.Send(command);
+        if (!result.Succeeded)
+        {
+            return Problem(result.Errors.FirstOrDefault());
+        }
         return Ok();
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpDelete("products/{id}")]
     public async Task<IActionResult> DeleteProduct([FromRoute] int id)
     {
+        var command = new DeleteProductCommand(id);
+        var result = await _mediator.Send(command);
+        if (!result.Succeeded)
+        {
+            return Problem(result.Errors.FirstOrDefault());
+        }
         return Ok();
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("brands")]
     public async Task<IActionResult> GetListBrands([FromQuery] PaginationRequest paginationReq)
     {
@@ -60,27 +94,51 @@ public class CatalogController : Controller
         return Ok(result);
     }
 
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPost("brands")]
     public async Task<IActionResult> CreateBrand(CreateBrandRequest req)
     {
-        return Ok();
+        var command = new CreateBrandCommand(req.Name);
+        var result = await _mediator.Send(command);
+        if (!result.Succeeded)
+        {
+            return Problem(result.Errors.FirstOrDefault());
+        }
+        return Created();
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPut("brands/{id}")]
     public async Task<IActionResult> UpdateBrand(
         [FromRoute] int id,
         [FromBody] UpdateBrandRequest req)
     {
+        var command = new UpdateBrandCommand(id, req.Name);
+        var result = await _mediator.Send(command);
+        if (!result.Succeeded)
+        {
+            return Problem(result.Errors.FirstOrDefault());
+        }
         return Ok();
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpDelete("brands/{id}")]
     public async Task<IActionResult> DeleteBrand([FromRoute] int id)
     {
+        var command = new DeleteBrandCommand(id);
+        var result = await _mediator.Send(command);
+        if (!result.Succeeded)
+        {
+            return Problem(result.Errors.FirstOrDefault());
+        }
         return Ok();
-
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("categories/hierarchy")]
     public async Task<IActionResult> GetCategoriesHierarchy()
     {
@@ -88,6 +146,7 @@ public class CatalogController : Controller
         return Ok(result);
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories()
     {

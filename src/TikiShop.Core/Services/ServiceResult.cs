@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace TikiShop.Core.Services
+﻿namespace TikiShop.Core.Services
 {
     public class ServiceResult
     {

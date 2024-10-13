@@ -1,6 +1,8 @@
-﻿namespace TikiShop.Core.Services.BasketService.Queries;
+﻿using TikiShop.Shared.ResponseModels.Basket;
+
+namespace TikiShop.Core.Services.BasketService.Queries;
 
 public interface IBasketQueries
 {
-    Task<dynamic> GetBasketByCustomerId(int buyerId);
+    Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId);
 }

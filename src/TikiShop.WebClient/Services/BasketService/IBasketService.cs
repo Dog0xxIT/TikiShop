@@ -1,14 +1,13 @@
-﻿using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Basket;
-using TikiShop.WebClient.Models.ResponseModels.Basket;
-using TikiShop.WebClient.Models.ResponseModels.Common;
+﻿using TikiShop.Shared.RequestModels.Basket;
+using TikiShop.Shared.RequestModels.Catalog;
+using TikiShop.Shared.ResponseModels.Basket;
+using TikiShop.WebClient.Core;
 
 namespace TikiShop.WebClient.Services.BasketService;
 
 public interface IBasketService
 {
-    Task<List<GetBasketByCustomerIdResponse>> GetBasketByCustomerId();
-    Task<ResultObject<ResponseObject>> AddToBasket(AddToBasketRequest request);
-    Task<ResultObject<ResponseObject>> UpdateQty(UpdateQtyRequest request);
-    Task<ResultObject<ResponseObject>> DeleteBasketItem(int id);
+    Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId();
+    Task<ResultObject> UpdateBasketItem(UpdateBasketItemRequest request);
+    Task<ResultObject> DeleteBasketItem(int id);
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TikiShop.Shared.RequestModels.Identity;
 using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Identity;
 
 namespace TikiShop.WebClient.Pages.User;
 
@@ -9,11 +9,11 @@ public partial class Login
     [CascadingParameter(Name = "Notification")]
     private TelerikNotification _notificatioRef { get; set; }
 
-    private SignInRequest _signInRequest;
+    private LoginRequest _loginRequest;
 
     protected override void OnInitialized()
     {
-        _signInRequest = new();
+        _loginRequest = new();
         // Check uri for redirect page
         if (_nav.Uri != $"{_nav.BaseUri}login")
         {
@@ -23,7 +23,7 @@ public partial class Login
 
     private async Task ValidSubmit()
     {
-        var resultObject = await _accountManagement.Login(_signInRequest);
+        var resultObject = await _accountManagement.Login(_loginRequest);
         if (resultObject.ResultCode.Equals(ResultCode.Success))
         {
             _notificatioRef.Show(

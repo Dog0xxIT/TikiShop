@@ -1,12 +1,6 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using TikiShop.Core.Models.RequestModels.Basket;
-using TikiShop.Core.Models.RequestModels.Catalog;
-using TikiShop.Core.Services.BasketService.Commands;
-using TikiShop.Core.Services.BasketService.Queries;
+﻿using TikiShop.Core.Services.BasketService.Commands;
 using TikiShop.Infrastructure.Common;
+using TikiShop.Shared.RequestModels.Basket;
 
 namespace TikiShop.Api.Controllers
 {
@@ -24,21 +18,9 @@ namespace TikiShop.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("")]
-        public async Task<IActionResult> CreateBasket()
-        {
-            var userId = Convert.ToInt32(this.User.FindFirstValue(ClaimTypes.Sid));
-            var command = new CreateBasketCommand(userId);
-            var result = await _mediator.Send(command);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.First());
-            }
-
-            return Ok();
-        }
-
-        [HttpGet("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet]
         public async Task<IActionResult> GetBasketByCustomerId()
         {
             var userId = Convert.ToInt32(this.User.FindFirstValue(ClaimTypes.Sid));
@@ -46,43 +28,32 @@ namespace TikiShop.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPatch("addItem")]
-        public async Task<IActionResult> AddToBasket(AddToBasketRequest req)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPatch]
+        public async Task<IActionResult> UpdateBasketItem(UpdateBasketItemRequest req)
         {
             var userId = Convert.ToInt32(this.User.FindFirstValue(ClaimTypes.Sid));
-            var command = new AddToBasketCommand(userId, req.ProductId);
+            var command = new UpdateQuantityCommand(userId, req.ProductId, req.ProductVariantId, req.Quantity);
             var result = await _mediator.Send(command);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             return Ok();
         }
 
-        [HttpPatch("updateQty")]
-        public async Task<IActionResult> UpdateQty(UpdateQtyRequest req)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpDelete("{basketItemId}")]
+        public async Task<IActionResult> DeleteBasketItem([FromRoute] int basketItemId)
         {
-            var userId = Convert.ToInt32(this.User.FindFirstValue(ClaimTypes.Sid));
-            var command = new UpdateQuantityCommand(userId, req.ProductId, req.Quantity);
+            var command = new DeleteBasketItemCommand(basketItemId);
             var result = await _mediator.Send(command);
             if (!result.Succeeded)
             {
-                return Problem(result.Errors.First());
-            }
-
-            return Ok();
-        }
-
-        [HttpDelete("{productId}")]
-        public async Task<IActionResult> Delete([FromRoute] int productId)
-        {
-            var userId = Convert.ToInt32(this.User.FindFirstValue(ClaimTypes.Sid));
-            var command = new DeleteBasketItemCommand(userId, productId);
-            var result = await _mediator.Send(command);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.First());
+                return Problem(result.Errors.FirstOrDefault());
             }
 
             return Ok();

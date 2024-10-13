@@ -1,7 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using dotenv.net;
-using Microsoft.Extensions.Logging;
 
 namespace TikiShop.Core.Services.CloudinaryService
 {

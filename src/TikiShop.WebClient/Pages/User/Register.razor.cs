@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TikiShop.Shared.RequestModels.Identity;
 using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Identity;
 
 namespace TikiShop.WebClient.Pages.User;
 
@@ -25,7 +25,7 @@ public partial class Register
             _notificatioRef.Show(
                 text: resultObject.Messages,
                 themeColor: ThemeConstants.Notification.ThemeColor.Light);
-            _navManager.NavigateTo("sign-in");
+            _navManager.NavigateTo("/login");
             return;
         }
 

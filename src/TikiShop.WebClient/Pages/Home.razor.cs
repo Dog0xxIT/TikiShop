@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using TikiShop.WebClient.Models.RequestModels.Catalog;
-using TikiShop.WebClient.Models.ResponseModels.Catalog;
-using TikiShop.WebClient.Models.ResponseModels.Common;
+using TikiShop.Shared.RequestModels.Catalog;
+using TikiShop.Shared.ResponseModels;
+using TikiShop.Shared.ResponseModels.Catalog;
 
 namespace TikiShop.WebClient.Pages;
 

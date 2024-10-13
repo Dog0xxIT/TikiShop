@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TikiShop.Core\TikiShop.Core.csproj" />
     <ProjectReference Include="..\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj" />
+    <ProjectReference Include="..\TikiShop.Shared\TikiShop.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,16 +1,19 @@
-﻿using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Identity;
-using TikiShop.WebClient.Models.ResponseModels.Common;
+﻿using TikiShop.Shared.RequestModels.Identity;
+using TikiShop.Shared.ResponseModels.Identity;
+using TikiShop.WebClient.Core;
 
 namespace TikiShop.WebClient.Services.IdentityService;
 
 public interface IIdentityService
 {
-    Task<ResultObject<ResponseObject>> ConfirmEmail(ConfirmEmailRequest request);
+    Task<ResultObject> ConfirmEmail(ConfirmEmailRequest request);
+    Task<ResultObject<ManageInfoResponse>> ManageInfo();
     Task<ResultObject> Logout();
-    Task<ResultObject<ResponseObject>> Register(RegisterRequest request);
-    Task<ResultObject> Login(SignInRequest request);
-    Task<ResultObject<ResponseObject>> ResendConfirmEmail(ResendConfirmEmailRequest request);
-    Task<ResultObject<ResponseObject>> ForgotPassword(ForgotPasswordRequest request);
-    Task<ResultObject<ResponseObject>> ResetPassword(ResetPasswordRequest request);
+    Task<ResultObject> Register(RegisterRequest request);
+    Task<ResultObject> Login(LoginRequest request);
+    Task<ResultObject> RefreshToken();
+    Task<ResultObject> ResendConfirmEmail(ResendConfirmEmailRequest request);
+    Task<ResultObject> ForgotPassword(ForgotPasswordRequest request);
+    Task<ResultObject> ResetPassword(ResetPasswordRequest request);
+    Task<ResultObject> ChangePassword(ResetPasswordRequest request);
 }

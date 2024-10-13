@@ -28,7 +28,7 @@
                 <CardBody>
                     <CardTitle>@_productInfo.Name</CardTitle>
                     <Rating Max="5" Star=@((int)_productInfo.RatingAverage)></Rating>
-                    <CardSubTitle>Total buyer: @_productInfo.TotalBuyer</CardSubTitle>
+                    <CardSubTitle>Total buyer: @_productInfo.TotalBought</CardSubTitle>
                     <CardTitle Class="text-warning">Price: @_productInfo.Price $</CardTitle>
                     <p>@_productInfo.ShortDescription</p>
 
@@ -38,7 +38,7 @@
                         if (configOption1 != null)
                         {
                             <div class="my-3">
-                                <b>@configOption1.OptionType</b>
+                                <b>@configOption1.OptionName</b>
                             </div>
                             <div class="row gy-2 mb-5 w-75">
                                 @foreach (var value in configOption1.Values)
@@ -54,7 +54,7 @@
                         if (configOption2 != null)
                         {
                             <div class="mb-3">
-                                <b>@configOption2.OptionType</b>
+                                <b>@configOption2.OptionName</b>
                             </div>
                             <div class="row gy-2 mb-5 w-75">
                                 @foreach (var value in configOption2.Values)

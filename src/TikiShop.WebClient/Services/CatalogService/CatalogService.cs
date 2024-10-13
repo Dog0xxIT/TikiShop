@@ -1,8 +1,7 @@
-﻿using TikiShop.WebClient.Core;
+﻿using TikiShop.Shared.RequestModels;
+using TikiShop.Shared.ResponseModels;
+using TikiShop.Shared.ResponseModels.Catalog;
 using TikiShop.WebClient.Core.CoreHttpClient;
-using TikiShop.WebClient.Models.RequestModels.Common;
-using TikiShop.WebClient.Models.ResponseModels.Catalog;
-using TikiShop.WebClient.Models.ResponseModels.Common;
 
 namespace TikiShop.WebClient.Services.CatalogService
 {
@@ -19,7 +18,7 @@ namespace TikiShop.WebClient.Services.CatalogService
         {
             var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListBrandsResponse>>(
                 clientName: "TikiShopApi",
-                uri: "api/v1/catalog/products",
+                uri: "api/v1/catalog/brands",
                 queryObj: paginationRequest);
 
             return resultObject.Data;
@@ -54,11 +53,12 @@ namespace TikiShop.WebClient.Services.CatalogService
         }
 
 
-        public async Task<ResultObject<GetProductByIdResponse>> GetProductById(int productId)
+        public async Task<GetProductByIdResponse> GetProductById(int productId)
         {
-            return await _coreHttpClient.GetAsync<GetProductByIdResponse>(
+            var result = await _coreHttpClient.GetAsync<GetProductByIdResponse>(
                 clientName: "TikiShopApi",
                 uri: $"api/v1/catalog/products/{productId}");
+            return result.Data;
         }
     }
 }

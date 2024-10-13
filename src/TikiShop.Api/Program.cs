@@ -1,21 +1,13 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using TikiShop.Core.Configurations;
-using TikiShop.Core.Services.BasketService.Queries;
-using TikiShop.Core.Services.CatalogService.Queries;
 using TikiShop.Core.Services.EmailService;
-using TikiShop.Core.Services.IdentityService;
-using TikiShop.Core.Services.OrderService.Queries;
-using TikiShop.Core.Services.TokenService;
 using TikiShop.Infrastructure;
-using TikiShop.Infrastructure.Models;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,9 +23,9 @@ builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
 builder.Services.AddTransient<IBasketQueries, EfBasketQueries>();
 
-var assemblies = Assembly.Load("TikiShop.Core");
 builder.Services.AddMediatR(cfg =>
 {
+    var assemblies = Assembly.Load("TikiShop.Core");
     cfg.RegisterServicesFromAssemblies(assemblies);
 });
 
@@ -55,7 +47,11 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddCookie(IdentityConstants.ExternalScheme)
     .AddJwtBearer(options =>
         {
@@ -80,11 +76,11 @@ builder.Services
     .AddGoogle(options =>
     {
         var ggOAuthConfig = builder.Configuration.GetSection("GoogleOAuth");
-
         options.ClientId = ggOAuthConfig["client_id"]!;
         options.ClientSecret = ggOAuthConfig["client_secret"]!;
         options.SignInScheme = IdentityConstants.ExternalScheme;
     });
+
 
 builder.Services.AddCors(options =>
 {
@@ -98,7 +94,13 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        }
+    );
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -135,7 +137,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "EShop API",
+        Title = "TikiShop API",
         Description = "An ASP.NET Core Web API for managing TikiShop items",
         TermsOfService = new Uri("https://example.com/terms"),
         Contact = new OpenApiContact

@@ -1,17 +1,13 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using TikiShop.Shared.RequestModels.Identity;
 using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Identity;
-using TikiShop.WebClient.Models.ResponseModels.Common;
-using TikiShop.WebClient.Models.ResponseModels.Identity;
 using TikiShop.WebClient.Services.IdentityService;
 
 namespace TikiShop.WebClient.States.AuthState;
 
 public class CookieAuthenticationStateProvider : AuthenticationStateProvider, IAccountManagement
 {
-
-    private readonly IHttpClientFactory _clientFactory;
     private readonly IIdentityService _identityService;
 
     /// <summary>
@@ -24,9 +20,8 @@ public class CookieAuthenticationStateProvider : AuthenticationStateProvider, IA
     /// </summary>
     private readonly ClaimsPrincipal _unauthenticated = new(new ClaimsIdentity());
 
-    public CookieAuthenticationStateProvider(IHttpClientFactory clientFactory, IIdentityService identityService)
+    public CookieAuthenticationStateProvider(IIdentityService identityService)
     {
-        _clientFactory = clientFactory;
         _identityService = identityService;
     }
 
@@ -36,24 +31,17 @@ public class CookieAuthenticationStateProvider : AuthenticationStateProvider, IA
         // default to not authenticated
         var user = _unauthenticated;
 
-        var httpClient = _clientFactory.CreateClient("TikiShopApi");
-        var response1 = await httpClient.GetAsync("/api/v1/manageInfo");
-
-        if (!response1.IsSuccessStatusCode)
+        var result1 = await _identityService.ManageInfo();
+        if (result1?.ResultCode != ResultCode.Success)
         {
-            var response2 = await httpClient.GetAsync("/api/v1/refreshToken");
-            if (!response2.IsSuccessStatusCode)
+            var result2 = await _identityService.RefreshToken();
+            if (result2?.ResultCode != ResultCode.Success)
             {
                 return new AuthenticationState(user);
             }
         }
 
-        var resultData = await response1.Content.ReadFromJsonAsync<ManageInfoResponse>();
-        if (resultData == null)
-        {
-            return new AuthenticationState(user);
-        }
-
+        var resultData = result1!.Data;
         var claims = new List<Claim>
         {
             new(ClaimTypes.Sid, resultData.UserId),
@@ -68,7 +56,7 @@ public class CookieAuthenticationStateProvider : AuthenticationStateProvider, IA
         return new AuthenticationState(user);
     }
 
-    public async Task<ResultObject> Login(SignInRequest req)
+    public async Task<ResultObject> Login(LoginRequest req)
     {
         var resultObject = await _identityService.Login(req);
         if (resultObject.ResultCode.Equals(ResultCode.Success))

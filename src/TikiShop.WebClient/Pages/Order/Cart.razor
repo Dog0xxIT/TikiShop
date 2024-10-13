@@ -15,9 +15,9 @@
                    Class="bg-transparent"
                    RowHeight="1">
     <TileLayoutItems>
-        <TileLayoutItem HeaderText="Shopping Cart" ColSpan="3" RowSpan="_basketItemList.Count+1">
+        <TileLayoutItem HeaderText="Shopping Cart" ColSpan="3" RowSpan="_basketResponse.Items.Count+1">
             <Content>
-                @foreach (var baskItem in _basketItemList)
+                @foreach (var baskItem in _basketResponse.Items)
                 {
                     <TelerikCard Orientation="CardOrientation.Horizontal" Class="mb-4 rounded-4 shadow">
                         <CardImage Src="@baskItem.PictureUrl" Height="120px" Width="120px"></CardImage>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TikiShop.Shared.RequestModels.Basket;
+using TikiShop.Shared.ResponseModels.Basket;
 using TikiShop.WebClient.Core;
-using TikiShop.WebClient.Models.RequestModels.Basket;
-using TikiShop.WebClient.Models.ResponseModels.Basket;
 
 namespace TikiShop.WebClient.Pages.Order;
 
@@ -10,33 +10,30 @@ public partial class Cart
     [CascadingParameter(Name = "Notification")]
     private TelerikNotification _notificatioRef { get; set; }
 
-    private List<GetBasketByCustomerIdResponse> _basketItemList;
+    private GetBasketByCustomerIdResponse _basketResponse;
     private bool _visibleLoader;
 
     protected override async Task OnInitializedAsync()
     {
         _visibleLoader = true;
-        _basketItemList = new();
-        _basketItemList.Add(new());
-        _basketItemList.Add(new());
-        _basketItemList.Add(new());
-        _basketItemList.Add(new());
-        //_basketItemList = await _basketService.GetBasketByCustomerId();
+        _basketResponse = new();
+        _basketResponse = await _basketService.GetBasketByCustomerId();
         _visibleLoader = false;
     }
 
     private async Task UpdateQty(int basketItemId, int qty)
     {
-        var req = new UpdateQtyRequest
+        var req = new UpdateBasketItemRequest()
         {
-            Qty = qty,
-            BasketItemId = basketItemId,
+            Quantity = qty,
+            ProductId = 0,
+            ProductVariantId = 0,
         };
         _visibleLoader = true;
-        var resultObject = await _basketService.UpdateQty(req);
+        var resultObject = await _basketService.UpdateBasketItem(req);
         if (resultObject.ResultCode.Equals(ResultCode.Success))
         {
-            _basketItemList = await _basketService.GetBasketByCustomerId();
+            _basketResponse = await _basketService.GetBasketByCustomerId();
             _notificatioRef.Show(
                 text: resultObject.Messages,
                 themeColor: ThemeConstants.Notification.ThemeColor.Light);
@@ -55,7 +52,7 @@ public partial class Cart
         var resultObject = await _basketService.DeleteBasketItem(basketItemId);
         if (resultObject.ResultCode.Equals(ResultCode.Success))
         {
-            _basketItemList = await _basketService.GetBasketByCustomerId();
+            _basketResponse = await _basketService.GetBasketByCustomerId();
             _notificatioRef.Show(
                 text: resultObject.Messages,
                 themeColor: ThemeConstants.Notification.ThemeColor.Light);
