@@ -1,19 +1,19 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TikiShop.Core.Services.EmailService;
+using TikiShop.Core.Services.UserService.Queries;
 using TikiShop.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddUserSecrets<Program>();
+
 builder.Services.Configure<SmtpConfig>(builder.Configuration.GetSection(SmtpConfig.SectionName));
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(JwtConfig.SectionName));
-
 builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddSingleton<TikiShopDapperContext>();
@@ -22,6 +22,7 @@ builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
 builder.Services.AddTransient<IBasketQueries, EfBasketQueries>();
+builder.Services.AddTransient<IUserQueries, EfUserQueries>();
 
 builder.Services.AddMediatR(cfg =>
 {
