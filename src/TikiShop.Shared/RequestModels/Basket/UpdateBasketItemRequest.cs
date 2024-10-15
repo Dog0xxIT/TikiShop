@@ -5,7 +5,7 @@ namespace TikiShop.Shared.RequestModels.Basket
     public class UpdateBasketItemRequest
     {
         [Required]
-        public int ProductId { get; set; }
+        public int ProductSkuId { get; set; }
 
         public int? ProductVariantId { get; set; }
 

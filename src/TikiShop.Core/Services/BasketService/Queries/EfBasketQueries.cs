@@ -16,6 +16,8 @@ namespace TikiShop.Core.Services.BasketService.Queries
 
         public async Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId)
         {
+            return new();
+            /*
             var result = new GetBasketByCustomerIdResponse
             {
                 BuyerId = buyerId,
@@ -40,7 +42,7 @@ namespace TikiShop.Core.Services.BasketService.Queries
                 .Select(bi => new GetBasketByCustomerIdResponse.Item
                 {
                     Id = bi.Id,
-                    ProductId = bi.ProductId,
+                    ProductSkuId = bi.ProductSkuId,
                     ProductVariantId = bi.ProductVariantId,
                     Quantity = bi.Quantity,
                     PictureUrl = bi.Product.ThumbnailUrl ?? "",
@@ -51,6 +53,7 @@ namespace TikiShop.Core.Services.BasketService.Queries
             result.Items.AddRange(basketItems);
 
             return result;
+            */
         }
     }
 }

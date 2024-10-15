@@ -6,7 +6,7 @@ public record CreateProductCommand(
     string Sku,
     string Name,
     string? Description,
-    string? ShortDescription,
+    string? Summary,
     double Price,
     string? ThumbnailUrl,
     int Quantity,

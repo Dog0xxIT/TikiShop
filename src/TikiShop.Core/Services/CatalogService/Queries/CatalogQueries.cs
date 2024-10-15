@@ -25,16 +25,16 @@ namespace TikiShop.Core.Services.CatalogService.Queries
         {
             using var conn = _dapperContext.CreateConnection();
             var sql = $"""
-                       SELECT TOP ({req.Limit}) [Id], [Sku], [Name], [Description], [ShortDescription], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
+                       SELECT TOP ({req.Limit}) [Id], [Sku], [Name], [Description], [Summary], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
                        FROM Products
-                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Units) TotalBuy
+                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Quantity) TotalBuy
                                 FROM OrderItems OI
                               GROUP BY OI.BasketItemId) AS B ON Products.Id = B.BasketItemId
                        WHERE Products.IsDeleted = 0
                        ORDER BY Id;
-                       SELECT TOP (100) [Id], [Sku], [Name], [Description], [ShortDescription], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
+                       SELECT TOP (100) [Id], [Sku], [Name], [Description], [Summary], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
                        FROM Products
-                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Units) TotalBuy
+                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Quantity) TotalBuy
                                 FROM OrderItems OI
                               GROUP BY OI.BasketItemId) AS B ON Products.Id = B.BasketItemId
                        WHERE Products.IsDeleted = 0

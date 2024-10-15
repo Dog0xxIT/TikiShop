@@ -17,6 +17,11 @@ namespace TikiShop.Core.Services.BasketService.CommandHandlers
 
         public async Task<ServiceResult> Handle(UpdateQuantityCommand request, CancellationToken cancellationToken)
         {
+            if (request.Quantity <= 0)
+            {
+                return ServiceResult.Failed("Invalid Quantity");
+            }
+
             var basket = await _context.Baskets
                 .AsNoTracking()
                 .SingleOrDefaultAsync(b => b.BuyerId == request.UserId);
@@ -25,37 +30,17 @@ namespace TikiShop.Core.Services.BasketService.CommandHandlers
                 return ServiceResult.Failed("Invalid Request");
             }
 
-            var product = await _context.Products
-                .AsNoTracking()
-                .Select(p => new { Id = p.Id, QuantityStock = p.Quantity })
-                .SingleOrDefaultAsync(p => p.Id == request.ProductId);
+            var product = await _context.ProductSkus
+                .FindAsync(request.ProductSkuId);
 
-            if (product is null)
-            {
-                return ServiceResult.Failed("Invalid ProductId");
-            }
-            if (request.Quantity <= 0 || request.Quantity > product.QuantityStock)
+            if (product is null || request.Quantity > product.Quantity)
             {
                 return ServiceResult.Failed("Invalid Quantity");
             }
 
-            var isAnyProductVariant = await _context.ProductVariants
-                .AnyAsync(pv => pv.ProductId == request.ProductId);
-            if (isAnyProductVariant)
-            {
-                var isExistProductVariant = await _context.ProductVariants
-                        .AnyAsync(pv => pv.Id == request.ProductVariantId);
-                if (!isExistProductVariant)
-                {
-                    return ServiceResult.Failed("Please Select Product Variant");
-                }
-            }
-
             var basketItem = await _context.BasketItems
                 .SingleOrDefaultAsync(bi => bi.BasketId == basket.Id &&
-                                            bi.ProductId == request.ProductId &&
-                                            bi.ProductVariantId == request.ProductVariantId);
-
+                                            bi.ProductSkuId == request.ProductSkuId);
 
             try
             {
@@ -64,8 +49,7 @@ namespace TikiShop.Core.Services.BasketService.CommandHandlers
                     basketItem = new BasketItem
                     {
                         BasketId = basket.Id,
-                        ProductId = request.ProductId,
-                        ProductVariantId = request.ProductVariantId,
+                        ProductSkuId = request.ProductSkuId,
                         Quantity = request.Quantity
                     };
                     await _context.BasketItems.AddAsync(basketItem);

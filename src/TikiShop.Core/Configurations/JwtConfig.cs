@@ -1,6 +1,6 @@
 ﻿namespace TikiShop.Core.Configurations
 {
-    public sealed record JwtConfig
+    public sealed class JwtConfig
     {
         public static readonly string SectionName = "JwtConfig";
 

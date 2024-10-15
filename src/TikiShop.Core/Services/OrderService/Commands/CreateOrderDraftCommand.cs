@@ -1,4 +1,11 @@
-﻿namespace TikiShop.Core.Services.OrderService.Commands
+﻿using TikiShop.Core.Dto;
+
+namespace TikiShop.Core.Services.OrderService.Commands
 {
-    public record CreateOrderDraftCommand : IRequest<ServiceResult>;
+    public record CreateOrderDraftCommand(
+        int BuyerId,
+        int AddressId,
+        List<OrderItemDto> Items) : IRequest<ServiceResult>;
 }
+
+

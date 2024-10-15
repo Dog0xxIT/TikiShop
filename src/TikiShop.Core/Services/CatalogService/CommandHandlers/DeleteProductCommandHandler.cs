@@ -16,33 +16,38 @@ namespace TikiShop.Core.Services.CatalogService.CommandHandlers
 
         public async Task<ServiceResult> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(request.Id);
+            var product = await _context.Products
+                .FindAsync(request.Id);
             if (product is null)
             {
                 return ServiceResult.Failed("Product Not Existed");
             }
 
-            var productVariants = await _context.ProductVariants
+            var productSkus = await _context.ProductSkus
                 .Where(pv => pv.ProductId == request.Id)
                 .ToListAsync();
-
-            product.IsDeleted = true;
-            product.SetTimeLastModified();
-            productVariants.ForEach(pv =>
-            {
-                pv.IsDeleted = true;
-                pv.SetTimeLastModified();
-            });
-
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                product.IsDeleted = true;
+                product.SetTimeLastModified();
                 _context.Products.Update(product);
-                _context.ProductVariants.UpdateRange(productVariants);
                 await _context.SaveChangesAsync();
+
+                productSkus.ForEach(ps =>
+                {
+                    ps.IsDeleted = true;
+                    ps.SetTimeLastModified();
+                });
+                await _context.BulkUpdateAsync(productSkus);
+                await _context.BulkSaveChangesAsync();
+
+                await transaction.CommitAsync();
                 return ServiceResult.Success;
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex.Message);
                 return ServiceResult.Failed();
             }

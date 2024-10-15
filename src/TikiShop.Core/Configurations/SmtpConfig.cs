@@ -1,6 +1,6 @@
 ﻿namespace TikiShop.Core.Configurations
 {
-    public sealed record SmtpConfig
+    public sealed class SmtpConfig
     {
         public static readonly string SectionName = "SmtpConfig";
 

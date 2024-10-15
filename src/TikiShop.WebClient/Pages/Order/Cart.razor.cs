@@ -21,13 +21,17 @@ public partial class Cart
         _visibleLoader = false;
     }
 
-    private async Task UpdateQty(int basketItemId, int qty)
+    private async Task UpdateQty(int productId, int? productVariantId, int qty)
     {
+        if (qty <= 0)
+        {
+            return;
+        }
         var req = new UpdateBasketItemRequest()
         {
             Quantity = qty,
-            ProductId = 0,
-            ProductVariantId = 0,
+            ProductSkuId = productId,
+            ProductVariantId = productVariantId,
         };
         _visibleLoader = true;
         var resultObject = await _basketService.UpdateBasketItem(req);

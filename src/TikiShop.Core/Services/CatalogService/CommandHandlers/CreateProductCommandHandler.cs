@@ -53,13 +53,10 @@ namespace TikiShop.Core.Services.CatalogService.CommandHandlers
             {
                 BrandId = request.BrandId,
                 CategoryId = request.CategoryId,
-                Description = request.Description,
+                Description = request.Description ?? "",
                 Name = request.Name,
-                Price = request.Price,
-                Quantity = request.Quantity,
-                ShortDescription = request.ShortDescription,
-                ThumbnailUrl = request.ThumbnailUrl,
-                Sku = request.Sku
+                Summary = request.Summary ?? "",
+                ThumbnailUrl = request.ThumbnailUrl ?? "",
             };
 
             try

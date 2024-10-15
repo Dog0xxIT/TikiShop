@@ -42,7 +42,7 @@
                                                    Width="100px"
                                                    Min="0"
                                                    Max="Int32.MaxValue"
-                                                   ValueChanged=@(async (int newValue) => await UpdateQty(baskItem.Id,newValue))>
+                                                   ValueChanged=@(async (int newValue) => await UpdateQty(baskItem.ProductId, baskItem.ProductVariantId,newValue))>
                             </TelerikNumericTextBox>
                             <TelerikButton OnClick=@(async () => await DeleteBasketItem(baskItem.Id))>Delete</TelerikButton>
                         </CardActions>
@@ -51,7 +51,8 @@
             </Content>
         </TileLayoutItem>
         <TileLayoutItem HeaderText="Total" ColSpan="1" RowSpan="2">
-            <Content>You can put components in the tiles too.
+            <Content>
+                You can put components in the tiles too.
                 <TelerikButton Class="mx-2 mb-4 py-3 w-100" ThemeColor="@ThemeConstants.Button.ThemeColor.Error">Buy</TelerikButton>
             </Content>
         </TileLayoutItem>

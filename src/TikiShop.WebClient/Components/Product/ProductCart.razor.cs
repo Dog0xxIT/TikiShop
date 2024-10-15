@@ -16,7 +16,7 @@ public partial class ProductCart
     {
         var req = new UpdateBasketItemRequest
         {
-            ProductId = productId,
+            ProductSkuId = productId,
             Quantity = 1,
         };
         var resultObject = await _basketService.UpdateBasketItem(req);

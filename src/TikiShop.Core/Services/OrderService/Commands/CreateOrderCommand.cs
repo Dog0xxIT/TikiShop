@@ -1,3 +1,8 @@
-﻿namespace TikiShop.Core.Services.OrderService.Commands;
+﻿using TikiShop.Core.Dto;
 
-public record CreateOrderCommand() : IRequest<ServiceResult>;
+namespace TikiShop.Core.Services.OrderService.Commands;
+
+public record CreateOrderCommand(
+    int BuyerId,
+    int AddressId,
+    List<OrderItemDto> Items) : IRequest<ServiceResult>;

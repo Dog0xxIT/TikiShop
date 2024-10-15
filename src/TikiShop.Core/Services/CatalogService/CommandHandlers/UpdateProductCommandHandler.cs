@@ -57,11 +57,11 @@ namespace TikiShop.Core.Services.CatalogService.CommandHandlers
             product.CategoryId = request.CategoryId;
             product.Description = request.Description;
             product.Name = request.Name;
-            product.Price = request.Price;
-            product.Quantity = request.Quantity;
-            product.ShortDescription = request.ShortDescription;
+            //product.Price = request.Price;
+            //product.Quantity = request.Quantity;
+            product.Summary = request.ShortDescription;
             product.ThumbnailUrl = request.ThumbnailUrl;
-            product.Sku = request.Sku;
+            //product.Sku = request.Sku;
 
             try
             {

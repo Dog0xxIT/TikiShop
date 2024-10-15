@@ -44,7 +44,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 {
                     Id = product.Id,
                     CategoryId = product.CategoryId,
-                    Price = product.Price,
+                    //Price = product.Price,
                     BrandId = product.BrandId,
                     //Discount = product.Discount,
                     Name = product.Name,
@@ -52,8 +52,8 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     //ReviewCount = product.ReviewCount,
                     //RatingAverage = product.RatingAverage,
                     // TotalBought = product.TotalBought,
-                    Sku = product.Sku,
-                    ShortDescription = product.ShortDescription,
+                    //Sku = product.Sku,
+                    ShortDescription = product.Summary,
                 }).ToList();
 
             var totalProducts = await _context.Products.CountAsync();
@@ -77,11 +77,12 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
         public async Task<GetProductByIdResponse> GetProductById(int id)
         {
+            /*
             var product = await _context.Products
                 .AsNoTracking()
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
-                .Include(product => product.ProductVariant)
+                .Include(product => product.ProductSkus)
                 .SingleOrDefaultAsync(p => p.Id == id);
 
             if (product is null)
@@ -91,10 +92,10 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
             var configOptions = new List<GetProductByIdResponse.ConfigOption>();
 
-            if (product.ProductVariant != null)
+            if (product.ProductSkus != null)
             {
-                var optionTypeId1 = product.ProductVariant.FirstOrDefault()?.OptionTypeId1;
-                var optionTypeId2 = product.ProductVariant.FirstOrDefault()?.OptionTypeId2;
+                var optionTypeId1 = product.ProductSkus.FirstOrDefault()?.OptionTypeId1;
+                var optionTypeId2 = product.ProductSkus.FirstOrDefault()?.OptionTypeId2;
 
                 var options1 = await _context.OptionTypes
                     .AsNoTracking()
@@ -105,7 +106,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     {
                         OptionCode = options1.Code,
                         OptionName = options1.Name,
-                        Values = product.ProductVariant.Select(pv => pv.OptionValue1).ToList(),
+                        Values = product.ProductSkus.Select(pv => pv.OptionValue1).ToList(),
                     });
                 }
 
@@ -118,7 +119,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     {
                         OptionCode = options2.Code,
                         OptionName = options2.Name,
-                        Values = product.ProductVariant.Select(pv => pv.OptionValue2).ToList()!,
+                        Values = product.ProductSkus.Select(pv => pv.OptionValue2).ToList()!,
                     });
                 }
             }
@@ -136,7 +137,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 //RatingAverage = product.RatingAverage,
                 //TotalBought = product.TotalBought,
                 Sku = product.Sku,
-                ShortDescription = product.ShortDescription ?? "",
+                Summary = product.Summary ?? "",
                 Brand = new()
                 {
                     Id = product.BrandId,
@@ -149,10 +150,10 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     Name = product?.Category.Name ?? "",
                     ThumbnailUrl = product?.Category.ThumbnailUrl ?? "",
                 },
-                Variants = product!.ProductVariant
+                Variants = product!.ProductSkus
                     ?.Select(pv => new GetProductByIdResponse.Variant
                     {
-                        ProductId = product.Id,
+                        ProductSkuId = product.Id,
                         Price = pv.Price,
                         AvailableStock = pv.Quantity,
                         Option1 = pv.OptionValue1,
@@ -163,6 +164,8 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             };
 
             return response;
+            */
+            return new();
         }
 
         public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
@@ -270,11 +273,11 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             List<int> brands,
             List<int> categories)
         {
-            if (req.MinPrice != null)
-                queryable = queryable.Where(product => product.Price >= req.MinPrice);
+            //if (req.MinPrice != null)
+            //    queryable = queryable.Where(product => product.Price >= req.MinPrice);
 
-            if (req.MaxPrice != null)
-                queryable = queryable.Where(product => product.Price <= req.MaxPrice);
+            //if (req.MaxPrice != null)
+            //    queryable = queryable.Where(product => product.Price <= req.MaxPrice);
 
             if (brands.Any())
                 queryable = queryable.Where(product => brands.Contains(product.BrandId));

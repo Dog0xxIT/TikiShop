@@ -8,16 +8,17 @@ namespace TikiShop.Infrastructure.Models
     {
         [ForeignKey(nameof(Buyer))]
         public int BuyerId { get; set; }
-        public int PaymentId { get; set; }
+        public int PaymentDetailId { get; set; }
         public int AddressId { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public string Description { get; set; }
+        public double Total { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public User Buyer { get; set; }
         public Address Address { get; set; }
-        public PaymentMethod Payment { get; set; }
+        public PaymentDetail PaymentDetail { get; set; }
         public List<OrderItem> OrderItems { get; set; }
     }
 }
