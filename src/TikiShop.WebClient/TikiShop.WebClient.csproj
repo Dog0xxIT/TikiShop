@@ -21,6 +21,5 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TikiShop.Shared\TikiShop.Shared.csproj" />
-		<Reference Include="Libs\*.dll" />
 	</ItemGroup>
 </Project>
