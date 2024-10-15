@@ -5,7 +5,8 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2CA5BE36-4781-491A-8705-CA37C7C38232}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
+		src\Dockerfile.TikiShop.Api = src\Dockerfile.TikiShop.Api
+		src\Dockerfile.TikiShop.WebClient = src\Dockerfile.TikiShop.WebClient
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Infrastructure", "src\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj", "{7375E35A-E380-4623-B271-FCB2D41D6FD0}"
@@ -17,6 +18,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Core", "src\TikiShop.Core\TikiShop.Core.csproj", "{25265182-6483-46EF-9748-5C8F73383FDE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikiShop.Shared", "src\TikiShop.Shared\TikiShop.Shared.csproj", "{B038F761-2B30-4707-9F81-7241D9D2A92A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{24C91503-78EF-4ED9-A5BD-DC59AF9C2901}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

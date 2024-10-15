@@ -1,24 +1,23 @@
 services:
-  web-api:
-    build: app/aspnetapp
-    ports:
-      - 80:80
-  web-app:
-    build: app/aspnetapp
-    ports:
-      - 80:80
-  database:
-    environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: example_123
-    # mssql server image isn't available for arm64 architecture, so we use azure-sql instead
-    image: mcr.microsoft.com/azure-sql-edge:1.0.4
-    # If you really want to use MS SQL Server, uncomment the following line
-    #image: mcr.microsoft.com/mssql/server
-    restart: always
-    healthcheck:
-        test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P example_123 -Q 'SELECT 1' || exit 1"]
-        interval: 10s
-        retries: 10
-        start_period: 10s
-        timeout: 3s     
+    tikishop_api:
+        container_name: tikishop_api
+        build:
+            context: .
+            dockerfile: src/Dockerfile.TikiShop.Api
+    tikishop_webclient:
+        container_name: tikishop_webclient
+        build:
+            context: .
+            dockerfile: src/Dockerfile.TikiShop.WebClient
+        ports:
+            - 8080:80
+    mssql:
+        container_name: sql-server
+        image: mcr.microsoft.com/mssql/server:2022-CU15-ubuntu-22.04
+        restart: always
+        environment:
+            ACCEPT_EULA: 'Y'
+            MSSQL_SA_PASSWORD: 'Contraseña12345678'
+            MSSQL_PID: 'Developer'
+        ports:
+            - 1433:1433
