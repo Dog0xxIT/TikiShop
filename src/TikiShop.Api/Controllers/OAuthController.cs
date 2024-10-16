@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Routing;
+using TikiShop.Core.Services;
+using TikiShop.Core.Utils;
 
 namespace TikiShop.Api.Controllers;
 
@@ -28,9 +31,9 @@ public class OAuthController : Controller
         _jwtConfig = jwtOptions.Value;
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("external-login")]
-    public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
+    public async Task<IActionResult> ExternalLogin([FromQuery] string provider, [FromQuery] string returnUrl)
     {
         var authSchemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
         if (authSchemes.All(s => s.Name != provider))
@@ -39,37 +42,72 @@ public class OAuthController : Controller
         }
 
         var domainName = HttpContext.Request.Host.Value;
-        var redirectUrl = $"https://{domainName}/signin-google?returnUrl={returnUrl}";
+        var redirectUrl = $"https://{domainName}/google-login?returnUrl={returnUrl}";
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-        //properties.AllowRefresh = true;
         return Challenge(properties, provider);
     }
 
-    [Authorize(AuthenticationSchemes = GoogleDefaults.AuthenticationScheme)]
     [HttpGet]
-    [Route("signin-google")]
-    public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null)
+    [Route("google-login")]
+    public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
     {
-        var info = await _signInManager.GetExternalLoginInfoAsync();
-        if (info is null)
+        var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+        if (externalLoginInfo is null)
         {
             return Problem("External Login Errors");
         }
 
-        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
+        var user = await _userManager.FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
+        if (user is null)
+        {
+            var userName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name) ?? "";
+            user = new User
+            {
+                Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email),
+                UserName = Helper.RemoveUnicode(userName).Replace(" ", ""),
+                EmailConfirmed = true,
+                LockoutEnabled = false
+            };
+
+            var createResult = await _userManager.CreateAsync(user);
+            if (!createResult.Succeeded)
+            {
+                var errors = createResult.Errors.Select(i => i.Description);
+                return Problem(errors.FirstOrDefault());
+            }
+
+            user = await _userManager.FindByEmailAsync(user.Email!);
+            var userLoginInfo = new UserLoginInfo(
+                externalLoginInfo.LoginProvider,
+                externalLoginInfo.ProviderKey,
+                externalLoginInfo.ProviderDisplayName);
+
+            var loginResult = await _userManager.AddLoginAsync(user!, userLoginInfo);
+            if (!loginResult.Succeeded)
+            {
+                var errors = loginResult.Errors.Select(i => i.Description);
+                return Problem(errors.FirstOrDefault());
+            }
+        }
+
+        _signInManager.AuthenticationScheme = IdentityConstants.ExternalScheme;
+        var result = await _signInManager.ExternalLoginSignInAsync(
+            externalLoginInfo.LoginProvider,
+            externalLoginInfo.ProviderKey,
+            false);
         if (result.IsLockedOut)
         {
-            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Is Locked Out");
+            return Problem("Is Locked Out");
         }
         if (result.IsNotAllowed)
         {
-            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Is Not Allowed");
+            return Problem("Is Not Allowed");
         }
         if (!result.Succeeded)
         {
             return Problem("Server Error");
         }
 
-        return Redirect(returnUrl ?? "/");
+        return Redirect(returnUrl);
     }
 }

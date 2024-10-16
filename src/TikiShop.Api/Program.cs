@@ -49,11 +49,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddCookie(IdentityConstants.ExternalScheme)
     .AddJwtBearer(options =>
         {
@@ -81,6 +77,7 @@ builder.Services
         options.ClientId = ggOAuthConfig["client_id"]!;
         options.ClientSecret = ggOAuthConfig["client_secret"]!;
         options.SignInScheme = IdentityConstants.ExternalScheme;
+        options.CallbackPath = "/signin-google";
     });
 
 
