@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -27,10 +29,10 @@ namespace TikiShop.Core.Utils
         ///    Convert To Date Int yyyyMMddHHmmss
         /// </summary>
         /// <param name="input"></param>
-        /// <returns>int yyyyMMddHHmmss Format</returns>    
-        public static int ConvertToDateInt(DateTime dateTime)
+        /// <returns>yyyyMMddHHmmss Format String</returns>    
+        public static string ConvertToDateIntString(DateTime dateTime)
         {
-            return Convert.ToInt32(dateTime.ToString("yyyyMMddHHmmss"));
+            return dateTime.ToString("yyyyMMddHHmmss");
         }
 
         public static string RemoveUnicode(string text)

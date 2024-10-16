@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using TikiShop.Core.Dto;
 
 namespace TikiShop.Core.Services.IdentityService;
@@ -14,4 +15,6 @@ public interface IIdentityService
     Task<ServiceResult> ForgotPassword(string email);
     Task<ServiceResult> ResetPassword(string userId, string resetCode, string newPassword);
     Task<ServiceResult> ChangePassword(string userId, string oldPassword, string newPassword);
+    Task<ServiceResult<AuthenticationProperties>> ExternalLogin(string provider, string returnUrl);
+    Task<ServiceResult<TokensDto>> ExternalLoginCallback();
 }

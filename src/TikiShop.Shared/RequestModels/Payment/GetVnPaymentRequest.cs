@@ -19,13 +19,13 @@ namespace TikiShop.Shared.RequestModels.Payment
         public string vnp_TmnCode { get; set; }
 
         [Range(1, 12)]
-        public int vnp_Amount { get; set; }
+        public string vnp_Amount { get; set; }
 
         [Range(3, 20)]
         public string vnp_BankCode { get; set; }
 
         [Range(14, 14)]
-        public int vnp_CreateDate { get; set; }
+        public string vnp_CreateDate { get; set; }
 
         [Range(3, 3)]
         public string vnp_CurrCode { get; set; }
@@ -40,13 +40,13 @@ namespace TikiShop.Shared.RequestModels.Payment
         public string vnp_OrderInfo { get; set; }
 
         [Range(1, 100)]
-        public int vnp_OrderType { get; set; }
+        public string vnp_OrderType { get; set; }
 
         [Range(10, 255)]
         public string vnp_ReturnUrl { get; set; }
 
         [Range(14, 14)]
-        public int vnp_ExpireDate { get; set; }
+        public string vnp_ExpireDate { get; set; }
 
         [Range(1, 100)]
         public string vnp_TxnRef { get; set; }

@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
@@ -7,6 +9,7 @@ using TikiShop.Core.Dto;
 using TikiShop.Core.Services.BasketService.Commands;
 using TikiShop.Core.Services.EmailService;
 using TikiShop.Core.Services.TokenService;
+using TikiShop.Core.Utils;
 using TikiShop.Infrastructure.Common;
 using TikiShop.Infrastructure.Models;
 
@@ -15,6 +18,7 @@ namespace TikiShop.Core.Services.IdentityService
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly ILogger<IdentityService> _logger;
         private readonly IEmailSender<User> _emailSender;
         private readonly ITokenService _tokenService;
@@ -27,13 +31,15 @@ namespace TikiShop.Core.Services.IdentityService
             IEmailSender<User> emailSender,
             ITokenService tokenService,
             IOptions<JwtConfig> jwtOptions,
-            IMediator mediator)
+            IMediator mediator,
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
             _tokenService = tokenService;
             _mediator = mediator;
+            _signInManager = signInManager;
             _jwtConfig = jwtOptions.Value;
         }
 
@@ -260,6 +266,113 @@ namespace TikiShop.Core.Services.IdentityService
             }
 
             return ServiceResult.Success;
+        }
+
+        public async Task<ServiceResult<AuthenticationProperties>> ExternalLogin(string provider, string redirectUrl)
+        {
+            var authSchemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            if (authSchemes.All(s => s.Name != provider))
+            {
+                return ServiceResult<AuthenticationProperties>.Failed("Provider Invalid");
+            }
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return ServiceResult<AuthenticationProperties>.Success(properties);
+        }
+
+        public async Task<ServiceResult<TokensDto>> ExternalLoginCallback()
+        {
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo is null)
+            {
+                return ServiceResult<TokensDto>.Failed("External Login Errors");
+            }
+
+            var user = await _userManager.FindByLoginAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
+            if (user is null)
+            {
+                var userName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name) ?? "";
+                user = new User
+                {
+                    Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email),
+                    UserName = Helper.RemoveUnicode(userName).Replace(" ", ""),
+                    EmailConfirmed = true,
+                    LockoutEnabled = false
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    var errors = createResult.Errors.Select(i => i.Description);
+                    return ServiceResult<TokensDto>.Failed(errors);
+                }
+
+                var resultAddRole = await _userManager.AddToRoleAsync(user, RolesConstant.Customer);
+                if (!resultAddRole.Succeeded)
+                {
+                    var errors = resultAddRole.Errors.Select(e => e.Description);
+                    return ServiceResult<TokensDto>.Failed(errors);
+                }
+
+                // Create Basket For User
+                var userId = await _userManager.GetUserIdAsync(user);
+                var resultAddBasket = await _mediator.Send(new CreateBasketCommand(Convert.ToInt32(userId)));
+                if (!resultAddBasket.Succeeded)
+                {
+                    return ServiceResult<TokensDto>.Failed(resultAddBasket.Errors);
+                }
+
+                user = await _userManager.FindByEmailAsync(user.Email!);
+                var userLoginInfo = new UserLoginInfo(
+                    externalLoginInfo.LoginProvider,
+                    externalLoginInfo.ProviderKey,
+                    externalLoginInfo.ProviderDisplayName);
+
+                var loginResult = await _userManager.AddLoginAsync(user!, userLoginInfo);
+                if (!loginResult.Succeeded)
+                {
+                    var errors = loginResult.Errors.Select(i => i.Description);
+                    return ServiceResult<TokensDto>.Failed(errors);
+                }
+            }
+
+            _signInManager.AuthenticationScheme = IdentityConstants.ExternalScheme;
+            var result = await _signInManager.ExternalLoginSignInAsync(
+                externalLoginInfo.LoginProvider,
+                externalLoginInfo.ProviderKey,
+                false);
+            if (result.IsLockedOut)
+            {
+                return ServiceResult<TokensDto>.Failed("Is Locked Out");
+            }
+            if (result.IsNotAllowed)
+            {
+                return ServiceResult<TokensDto>.Failed("Is Not Allowed");
+            }
+            if (!result.Succeeded)
+            {
+                return ServiceResult<TokensDto>.Failed("Server Error");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
+            {
+                new (ClaimTypes.Sid, user.Id.ToString()),
+                new (ClaimTypes.Email, user.Email!),
+            };
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+            var accessToken = _tokenService.GenerateAccessToken(claims);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtConfig.RefreshTokenExpiryTime); // Expiry time refresh token
+            var identityResult = await _userManager.UpdateAsync(user); // Save refresh token in Db
+            if (!identityResult.Succeeded)
+            {
+                var errors = identityResult.Errors.Select(e => e.Description);
+                return ServiceResult<TokensDto>.Failed(errors);
+            }
+
+            return ServiceResult<TokensDto>.Success(new(accessToken, refreshToken));
         }
     }
 }

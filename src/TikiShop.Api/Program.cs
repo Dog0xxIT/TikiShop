@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 builder.Services.Configure<SmtpConfig>(builder.Configuration.GetSection(SmtpConfig.SectionName));
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(JwtConfig.SectionName));
+builder.Services.Configure<VnPayConfig>(builder.Configuration.GetSection(VnPayConfig.SectionName));
 builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddSingleton<TikiShopDapperContext>();

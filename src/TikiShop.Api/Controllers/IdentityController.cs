@@ -1,4 +1,6 @@
-﻿using TikiShop.Shared.RequestModels.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Org.BouncyCastle.Ocsp;
+using TikiShop.Shared.RequestModels.Identity;
 using TikiShop.Shared.ResponseModels.Identity;
 
 namespace TikiShop.Api.Controllers
@@ -111,6 +113,40 @@ namespace TikiShop.Api.Controllers
             SetTokenInCookie(tokensDto.AccessToken, tokensDto.RefreshToken);
 
             return Ok();
+        }
+
+        [ProducesResponseType(StatusCodes.Status302Found)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet]
+        [Route("external-login")]
+        public async Task<IActionResult> ExternalLogin([FromQuery] string provider, [FromQuery] string returnUrl)
+        {
+            var domainName = HttpContext.Request.Host.Value;
+            var redirectUrl = $"https://{domainName}/api/v1/external-login-callback?returnUrl={returnUrl}";
+            var result = await _identityService.ExternalLogin(provider, redirectUrl);
+            if (!result.Succeeded)
+            {
+                return Problem(result.Errors.FirstOrDefault());
+            }
+
+            return Challenge(result.Data!, provider);
+        }
+
+        [ProducesResponseType(StatusCodes.Status302Found)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpGet]
+        [Route("external-login-callback")]
+        public async Task<IActionResult> ExternalLoginCallback([FromQuery] string returnUrl)
+        {
+            var result = await _identityService.ExternalLoginCallback();
+            if (!result.Succeeded)
+            {
+                return Problem(result.Errors.FirstOrDefault());
+            }
+            var tokensDto = result.Data!;
+            SetTokenInCookie(tokensDto.AccessToken, tokensDto.RefreshToken);
+            return Redirect(returnUrl);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
