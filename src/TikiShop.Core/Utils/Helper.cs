@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,26 @@ namespace TikiShop.Core.Utils
                 sb.Append($"{x:x2}");
             }
             return sb.ToString(); // The resulting string is 64 characters long
+        }
+
+        public static string DescriptionAttr<T>(this T source)
+        {
+            if (source is null)
+            {
+                throw new NullReferenceException(nameof(source));
+            }
+
+            var fi = source.GetType().GetField(source.ToString()!);
+
+            if (fi?.GetCustomAttributes(typeof(DescriptionAttribute), false) is
+                DescriptionAttribute[]
+                {
+                    Length: > 0
+                } attributes)
+            {
+                return attributes[0].Description;
+            }
+            return source.ToString()!;
         }
 
         /// <summary>

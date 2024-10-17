@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TikiShop.Shared.RequestModels.Payment
+namespace TikiShop.Core.Dto
 {
-    public class ReturnUrlVnPayRequest
+    internal class ReturnUrlDto
     {
         [Range(8, 8)]
         public string vnp_TmnCode { get; set; }

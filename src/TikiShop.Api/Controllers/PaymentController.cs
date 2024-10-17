@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TikiShop.Core.Services.VnPayService;
+using TikiShop.Infrastructure.Common;
+using TikiShop.Shared.RequestModels.Payment;
 
 namespace TikiShop.Api.Controllers
 {
@@ -17,11 +19,13 @@ namespace TikiShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status302Found)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = RolesConstant.Customer)]
         [HttpGet]
-        [Route("vnpay")]
-        public IActionResult GetVnPayment()
+        [Route("vnpay/{orderId}")]
+        public IActionResult GetVnPayment([FromRoute] int orderId)
         {
-            var result = _vnPayService.CreatePaymentUrl();
+            var ipAddress = Utils.GetIpAddress(this.HttpContext);
+            var result = _vnPayService.CreatePaymentUrl(orderId, ipAddress);
             if (!result.Succeeded)
             {
                 return Problem("Error");
@@ -35,9 +39,9 @@ namespace TikiShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet]
         [Route("vnpay-return")]
-        public IActionResult VnPayReturnUrlCallback()
+        public IActionResult VnPayReturnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
         {
-            var result = _vnPayService.ReturnUrlVnPay(new());
+            var result = _vnPayService.ReturnUrlVnPay(returnUrlParams);
             if (!result.Succeeded)
             {
                 return Problem("Error");
@@ -51,9 +55,9 @@ namespace TikiShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet]
         [Route("IPN")]
-        public IActionResult VnPayIpnUrlCallback()
+        public IActionResult VnPayIpnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
         {
-            var result = _vnPayService.ReturnUrlVnPay(new());
+            var result = _vnPayService.ReturnUrlVnPay(returnUrlParams);
             if (!result.Succeeded)
             {
                 return Problem("Error");

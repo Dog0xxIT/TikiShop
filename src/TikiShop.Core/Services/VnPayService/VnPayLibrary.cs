@@ -78,7 +78,6 @@ namespace TikiShop.Core.Services.VnPayService
 
         private string GetResponseData()
         {
-
             var data = new StringBuilder();
             if (_responseData.ContainsKey("vnp_SecureHashType"))
             {
@@ -125,15 +124,16 @@ namespace TikiShop.Core.Services.VnPayService
             return hash.ToString();
         }
 
-        public static string GetIpAddress()
+        public static string GetIpAddress(HttpContext httpContext)
         {
             string ipAddress;
             try
             {
-                ipAddress = "";// HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-
+                ipAddress = httpContext.Request.Headers["HTTP_X_FORWARDED_FOR"];
                 if (string.IsNullOrEmpty(ipAddress) || (ipAddress.ToLower() == "unknown") || ipAddress.Length > 45)
-                    ipAddress = "";  //HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+                {
+                    ipAddress = httpContext.Request.Headers["REMOTE_ADDR"];
+                }
             }
             catch (Exception ex)
             {
