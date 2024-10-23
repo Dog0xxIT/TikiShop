@@ -45,11 +45,7 @@ public class CatalogController : Controller
             req.ShortDescription, req.Price, req.ThumbnailUrl,
             req.Quantity, req.CategoryId, req.BrandId);
         var result = await _mediator.Send(command);
-        if (!result.Succeeded)
-        {
-            return Problem(result.Errors.FirstOrDefault());
-        }
-        return Created();
+        return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -65,11 +61,7 @@ public class CatalogController : Controller
             req.Price, req.ThumbnailUrl,
             req.Quantity, req.CategoryId, req.BrandId);
         var result = await _mediator.Send(command);
-        if (!result.Succeeded)
-        {
-            return Problem(result.Errors.FirstOrDefault());
-        }
-        return Ok();
+        return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -79,11 +71,7 @@ public class CatalogController : Controller
     {
         var command = new DeleteProductCommand(id);
         var result = await _mediator.Send(command);
-        if (!result.Succeeded)
-        {
-            return Problem(result.Errors.FirstOrDefault());
-        }
-        return Ok();
+        return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -101,11 +89,7 @@ public class CatalogController : Controller
     {
         var command = new CreateBrandCommand(req.Name);
         var result = await _mediator.Send(command);
-        if (!result.Succeeded)
-        {
-            return Problem(result.Errors.FirstOrDefault());
-        }
-        return Created();
+        return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -117,11 +101,7 @@ public class CatalogController : Controller
     {
         var command = new UpdateBrandCommand(id, req.Name);
         var result = await _mediator.Send(command);
-        if (!result.Succeeded)
-        {
-            return Problem(result.Errors.FirstOrDefault());
-        }
-        return Ok();
+        return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -131,11 +111,7 @@ public class CatalogController : Controller
     {
         var command = new DeleteBrandCommand(id);
         var result = await _mediator.Send(command);
-        if (!result.Succeeded)
-        {
-            return Problem(result.Errors.FirstOrDefault());
-        }
-        return Ok();
+        return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -148,9 +124,9 @@ public class CatalogController : Controller
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("categories")]
-    public async Task<IActionResult> GetCategories()
+    public async Task<IActionResult> GetCategories([FromQuery]PaginationRequest paginationReq)
     {
-        var result = await _catalogQueries.GetCategories();
+        var result = await _catalogQueries.GetCategories(paginationReq);
         return Ok(result);
     }
 }

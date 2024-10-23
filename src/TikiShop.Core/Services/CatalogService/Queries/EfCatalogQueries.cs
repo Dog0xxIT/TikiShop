@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Org.BouncyCastle.Ocsp;
 using TikiShop.Infrastructure;
 using TikiShop.Infrastructure.Models;
 using TikiShop.Shared.Enums;
@@ -20,51 +21,48 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             _logger = logger;
         }
 
-        public async Task<PaginationResponse<GetListProductResponse>> GetListProducts(GetListProductRequest req)
+        public async Task<PaginationResponse<ProductDto>> GetListProducts(GetListProductRequest req)
         {
             if (req.MinPrice > req.MaxPrice)
             {
                 return new();
             }
-
+            req.MinPrice ??= 0;
+            req.MaxPrice ??= double.MaxValue;
             var brands = ParseIds(req.Brands);
             var categories = ParseIds(req.Categories);
-
             var queryable = _context.Products.AsQueryable().AsNoTracking();
             queryable = ApplyFilters(queryable, req, brands, categories);
             queryable = ApplySorting(queryable, req);
-
-            var products = await queryable
+            var rnd = new Random();
+            var productDtoList = await queryable
+                .Select(product =>
+                    new ProductDto
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Price = product.ProductSkus.First(ps => (ps.Price >= req.MinPrice && ps.Price <= req.MaxPrice)).Price,
+                        Discount = rnd.Next(1, 100),
+                        RatingAverage = rnd.Next(1, 5),
+                        ReviewCount = rnd.Next(500, 20000),
+                        ThumbnailUrl = product.ThumbnailUrl,
+                        TotalBought = product.Id,
+                        ShortDescription = product.Summary,
+                        Description = product.Description,
+                    })
                 .Skip((req.Page - 1) * req.Limit)
                 .Take(req.Limit)
                 .ToListAsync();
 
-            var productsDto = products.Select(product =>
-                new GetListProductResponse
-                {
-                    Id = product.Id,
-                    CategoryId = product.CategoryId,
-                    //Price = product.Price,
-                    BrandId = product.BrandId,
-                    //Discount = product.Discount,
-                    Name = product.Name,
-                    ThumbnailUrl = product.ThumbnailUrl,
-                    //ReviewCount = product.ReviewCount,
-                    //RatingAverage = product.RatingAverage,
-                    // TotalBought = product.TotalBought,
-                    //Sku = product.Sku,
-                    ShortDescription = product.Summary,
-                }).ToList();
-
             var totalProducts = await _context.Products.CountAsync();
-            var totalPage = req.Limit != 0 ? (totalProducts / req.Limit) + 1 : 0;
+            var totalPage = (totalProducts / req.Limit) + 1;
 
-            var response = new PaginationResponse<GetListProductResponse>
+            var response = new PaginationResponse<ProductDto>
             {
-                Data = productsDto,
+                Data = productDtoList,
                 Meta = new PaginationMetaDto
                 {
-                    Count = productsDto.Count,
+                    Count = productDtoList.Count,
                     CurrentPage = req.Page,
                     Total = totalProducts,
                     TotalPages = totalPage,
@@ -75,100 +73,62 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return response;
         }
 
-        public async Task<GetProductByIdResponse> GetProductById(int id)
+        public async Task<ProductDto> GetProductById(int id)
         {
-            /*
-            var product = await _context.Products
+            var rnd = new Random();
+            var productDto = await _context.Products
                 .AsNoTracking()
-                .Include(p => p.Brand)
-                .Include(p => p.Category)
-                .Include(product => product.ProductSkus)
-                .SingleOrDefaultAsync(p => p.Id == id);
-
-            if (product is null)
-            {
-                return new();
-            }
-
-            var configOptions = new List<GetProductByIdResponse.ConfigOption>();
-
-            if (product.ProductSkus != null)
-            {
-                var optionTypeId1 = product.ProductSkus.FirstOrDefault()?.OptionTypeId1;
-                var optionTypeId2 = product.ProductSkus.FirstOrDefault()?.OptionTypeId2;
-
-                var options1 = await _context.OptionTypes
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(i => i.Id == optionTypeId1);
-                if (options1 != null)
-                {
-                    configOptions.Add(new GetProductByIdResponse.ConfigOption
+                .Select(product =>
+                    new ProductDto
                     {
-                        OptionCode = options1.Code,
-                        OptionName = options1.Name,
-                        Values = product.ProductSkus.Select(pv => pv.OptionValue1).ToList(),
-                    });
-                }
-
-                var options2 = await _context.OptionTypes
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(i => i.Id == optionTypeId2);
-                if (options2 != null)
-                {
-                    configOptions.Add(new GetProductByIdResponse.ConfigOption
-                    {
-                        OptionCode = options2.Code,
-                        OptionName = options2.Name,
-                        Values = product.ProductSkus.Select(pv => pv.OptionValue2).ToList()!,
-                    });
-                }
-            }
-
-
-            var response = new GetProductByIdResponse
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description ?? "",
-                Price = product.Price,
-                ThumbnailUrl = product.ThumbnailUrl ?? "",
-                //Discount = product.Discount,
-                //ReviewCount = product.ReviewCount,
-                //RatingAverage = product.RatingAverage,
-                //TotalBought = product.TotalBought,
-                Sku = product.Sku,
-                Summary = product.Summary ?? "",
-                Brand = new()
-                {
-                    Id = product.BrandId,
-                    Name = product?.Brand.Name ?? "",
-                    Slug = product?.Brand.Slug ?? ""
-                },
-                Category = new()
-                {
-                    Id = product!.CategoryId,
-                    Name = product?.Category.Name ?? "",
-                    ThumbnailUrl = product?.Category.ThumbnailUrl ?? "",
-                },
-                Variants = product!.ProductSkus
-                    ?.Select(pv => new GetProductByIdResponse.Variant
-                    {
-                        ProductSkuId = product.Id,
-                        Price = pv.Price,
-                        AvailableStock = pv.Quantity,
-                        Option1 = pv.OptionValue1,
-                        Option2 = pv.OptionValue2
+                        Id = product.Id,
+                        Name = product.Name,
+                        Discount = rnd.Next(1, 100),
+                        RatingAverage = rnd.Next(1, 5),
+                        ReviewCount = rnd.Next(500, 20000),
+                        ThumbnailUrl = product.ThumbnailUrl,
+                        TotalBought = product.Id,
+                        ShortDescription = product.Summary,
+                        Description = product.Description,
+                        Brand = new BrandDto
+                        {
+                            Id = product.BrandId,
+                            Name = product.Brand.Name,
+                            Slug = product.Brand.Slug,
+                        },
+                        Category = new CategoryDto
+                        {
+                            Id = product.CategoryId,
+                            Name = product.Category.Name,
+                            ThumbnailUrl = product.Category.ThumbnailUrl,
+                        },
+                        ProductSkus = product.ProductSkus.Select(ps => new ProductSkuDto
+                        {
+                            Price = ps.Price,
+                            Id = ps.Id,
+                            Name = ps.Name,
+                            Sku = ps.Sku,
+                            Option1 = ps.AttributeId1 != null ? new ConfigOptionDto
+                            {
+                                Value = ps.Attribute1!.Value,
+                                Code = ps.Attribute1.Code,
+                                Type = ps.Attribute1.Type,
+                            } : null,
+                            Option2 = ps.AttributeId2 != null ? new ConfigOptionDto
+                            {
+                                Value = ps.Attribute2!.Value,
+                                Code = ps.Attribute2.Code,
+                                Type = ps.Attribute2.Type,
+                            } : null,
+                            Quantity = ps.Quantity
+                        }).ToList(),
                     })
-                    ?.ToList() ?? new(),
-                ConfigOptions = configOptions
-            };
+                .SingleOrDefaultAsync(product => product.Id == id);
 
-            return response;
-            */
-            return new();
+            return productDto ?? new();
         }
 
-        public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
+        public async Task<PaginationResponse<BrandDto>> GetListBrands(PaginationRequest req)
         {
             var queryable = _context.Brands
                 .Skip(req.Page)
@@ -180,11 +140,10 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
             var brands = await queryable.ToListAsync();
             var totalBrand = await _context.Brands.CountAsync();
-            var totalPage = req.Limit != 0 ?
-                (totalBrand / req.Limit) + 1 : 0;
-            var brandsDto = brands.Adapt<List<GetListBrandsResponse>>();
+            var totalPage = (totalBrand / req.Limit) + 1;
+            var brandsDto = brands.Adapt<List<BrandDto>>();
 
-            var response = new PaginationResponse<GetListBrandsResponse>
+            var response = new PaginationResponse<BrandDto>
             {
                 Data = brandsDto,
                 Meta = new PaginationMetaDto
@@ -201,14 +160,14 @@ namespace TikiShop.Core.Services.CatalogService.Queries
         }
 
 
-        public async Task<List<GetAllCategoriesResponse>> GetCategoriesHierarchy()
+        public async Task<List<CategoryDto>> GetCategoriesHierarchy()
         {
             var categories = await _context.Categories
                 .AsNoTracking()
                 .ToListAsync();
 
             var categoriesDto = categories
-                .Select(category => new GetAllCategoriesResponse
+                .Select(category => new CategoryDto
                 {
                     Id = category.Id,
                     Name = category.Name,
@@ -221,11 +180,21 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return categoriesDto;
         }
 
-        public async Task<PaginationResponse<GetAllCategoriesResponse>> GetCategories()
+        public async Task<PaginationResponse<CategoryDto>> GetCategories(PaginationRequest req)
         {
-            var categories = await _context.Categories.ToListAsync();
+            var queryable = _context.Categories
+            .Skip(req.Page)
+            .Take(req.Limit);
 
-            var categoriesDto = categories.Select(category => new GetAllCategoriesResponse
+            queryable = req.SortDescending ?
+                queryable.OrderByDescending(p => p.Id) :
+                queryable.OrderBy(p => p.Id);
+
+            var categories = await queryable.ToListAsync();
+            var totalCategory = await _context.Categories.CountAsync();
+            var totalPage = (totalCategory / req.Limit) + 1;
+
+            var categoriesDto = categories.Select(category => new CategoryDto
             {
                 Id = category.Id,
                 Name = category.Name,
@@ -234,16 +203,16 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 Childs = new(),
             }).ToList();
 
-            var response = new PaginationResponse<GetAllCategoriesResponse>
+            var response = new PaginationResponse<CategoryDto>
             {
                 Data = categoriesDto,
                 Meta = new PaginationMetaDto
                 {
                     Count = categoriesDto.Count,
-                    CurrentPage = 1,
+                    CurrentPage = req.Page,
                     Total = categoriesDto.Count,
-                    TotalPages = 1,
-                    PerPage = 1
+                    TotalPages = totalPage,
+                    PerPage = req.Limit
                 }
             };
 
@@ -273,11 +242,11 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             List<int> brands,
             List<int> categories)
         {
-            //if (req.MinPrice != null)
-            //    queryable = queryable.Where(product => product.Price >= req.MinPrice);
+            if (req.MinPrice != null)
+                queryable = queryable.Where(product => product.ProductSkus.Any(ps => ps.Price >= req.MinPrice));
 
-            //if (req.MaxPrice != null)
-            //    queryable = queryable.Where(product => product.Price <= req.MaxPrice);
+            if (req.MaxPrice != null)
+                queryable = queryable.Where(product => product.ProductSkus.Any(ps => ps.Price <= req.MaxPrice));
 
             if (brands.Any())
                 queryable = queryable.Where(product => brands.Contains(product.BrandId));
@@ -291,7 +260,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return queryable;
         }
 
-        private List<GetAllCategoriesResponse> GetChildCategories(
+        private List<CategoryDto> GetChildCategories(
             int parentCategoryId,
             List<Category> categoryList,
             int level)
@@ -304,7 +273,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             // Tìm danh mục con của danh mục hiện tại (parentCategory)
             var childCategories = categoryList.Where(c => c.ParentId == parentCategoryId);
 
-            return childCategories.Select(child => new GetAllCategoriesResponse
+            return childCategories.Select(child => new CategoryDto
             {
                 Id = child.Id,
                 Name = child.Name,

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using TikiShop.Infrastructure;
+using TikiShop.Infrastructure.Models;
 using TikiShop.Shared.RequestModels;
 using TikiShop.Shared.RequestModels.Catalog;
 using TikiShop.Shared.ResponseModels;
@@ -21,47 +22,30 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             _logger = logger;
         }
 
-        public async Task<PaginationResponse<GetListProductResponse>> GetListProducts(GetListProductRequest req)
+        public async Task<PaginationResponse<ProductDto>> GetListProducts(GetListProductRequest req)
         {
             using var conn = _dapperContext.CreateConnection();
             var sql = $"""
-                       SELECT TOP ({req.Limit}) [Id], [Sku], [Name], [Description], [Summary], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
-                       FROM Products
-                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Quantity) TotalBuy
-                                FROM OrderItems OI
-                              GROUP BY OI.BasketItemId) AS B ON Products.Id = B.BasketItemId
-                       WHERE Products.IsDeleted = 0
-                       ORDER BY Id;
-                       SELECT TOP (100) [Id], [Sku], [Name], [Description], [Summary], [Price], [ThumbnailUrl], [Quantity], [CategoryId], [Id], [Created], [LastModified], [IsDeleted], [TotalBuy] ToTalBuyer
-                       FROM Products
-                            LEFT JOIN (SELECT OI.BasketItemId, SUM(OI.Quantity) TotalBuy
-                                FROM OrderItems OI
-                              GROUP BY OI.BasketItemId) AS B ON Products.Id = B.BasketItemId
-                       WHERE Products.IsDeleted = 0
-                       ORDER BY Id
+                      SELECT TOP {req.Limit} P.Id, P.Name, P.ThumbnailUrl, P.Summary AS ShortDescription, P.Description, P.CategoryId, P.BrandId, 
+                      FROM Products AS P
+                      WHERE P.IsDeleted = 0
+                      ORDER BY P.Id DESC;
+                      """;
+            var products = await conn.QueryAsync<Product>(sql);
+            foreach (var product in products)
+            {
+                sql = $"""
+                       SELECT PS.Id, PS.ProductId, PS.Name, PS.Sku, PS.Price, PS.Quantity, PS.AttributeId1, PS.AttributeId2, PS.Created, PS.LastModified, PS.IsDeleted
+                       FROM ProductSkus AS PS LEFT JOIN ProductAttribute AS PA ON PS.AttributeId1 = PA.Id OR PS.AttributeId2 = PA.Id 
                        """;
-            if (req.SortDescending)
-            {
-                sql += "DESC";
             }
-            var result = await conn.QueryAsync<GetListProductResponse>(sql);
-            var total = await conn.ExecuteScalarAsync<int>("select count(*) from Products WHERE Products.IsDeleted = 0");
-            var pagingResult = new PaginationResponse<GetListProductResponse>
-            {
-                Data = result,
-                Meta = new()
-                {
-                    Count = result.Count(),
-                    CurrentPage = req.Page,
-                    PerPage = req.Limit,
-                    Total = total,
-                    TotalPages = total / req.Limit,
-                }
-            };
-            return pagingResult;
+            products.ToList().ForEach(product => Console.WriteLine($"Product: {product.Name}, Category: {product.Category.Name}"));
+
+            Console.ReadLine();
+            return new();
         }
 
-        public async Task<GetProductByIdResponse> GetProductById(int id)
+        public async Task<ProductDto> GetProductById(int id)
         {
             var sql = $"""
                        select * from products
@@ -73,7 +57,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
+        public async Task<PaginationResponse<BrandDto>> GetListBrands(PaginationRequest req)
         {
             var sql = $"""
                        select * from brands
@@ -84,7 +68,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<List<GetAllCategoriesResponse>> GetCategoriesHierarchy()
+        public async Task<List<CategoryDto>> GetCategoriesHierarchy()
         {
             var sql = $"""
                        select * from brands
@@ -95,7 +79,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<PaginationResponse<GetAllCategoriesResponse>> GetCategories()
+        public async Task<PaginationResponse<CategoryDto>> GetCategories(PaginationRequest req)
         {
             var sql = $"""
                        select * from categories

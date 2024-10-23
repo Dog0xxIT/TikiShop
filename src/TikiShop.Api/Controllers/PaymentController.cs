@@ -22,10 +22,10 @@ namespace TikiShop.Api.Controllers
         [Authorize(Roles = RolesConstant.Customer)]
         [HttpGet]
         [Route("vnpay/{orderId}")]
-        public IActionResult GetVnPayment([FromRoute] int orderId)
+        public async Task< IActionResult> GetVnPayment([FromRoute] int orderId)
         {
             var ipAddress = Utils.GetIpAddress(this.HttpContext);
-            var result = _vnPayService.CreatePaymentUrl(orderId, ipAddress);
+            var result = await _vnPayService.CreatePaymentUrl(orderId, ipAddress);
             if (!result.Succeeded)
             {
                 return Problem("Error");
@@ -39,15 +39,15 @@ namespace TikiShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet]
         [Route("vnpay-return")]
-        public IActionResult VnPayReturnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
+        public async Task< IActionResult> VnPayReturnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
         {
-            var result = _vnPayService.ReturnUrlVnPay(returnUrlParams);
+            var result =await  _vnPayService.ReturnUrlVnPay(returnUrlParams);
             if (!result.Succeeded)
             {
                 return Problem("Error");
             }
-            var paymentRequestUrl = result.Data ?? "";
-            return Redirect(paymentRequestUrl);
+            var paymentRequestUrl = result.Data;
+            return Redirect("");
         }
 
         [ProducesResponseType(StatusCodes.Status302Found)]
@@ -55,15 +55,16 @@ namespace TikiShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet]
         [Route("IPN")]
-        public IActionResult VnPayIpnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
+        public async Task< IActionResult> VnPayIpnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
         {
-            var result = _vnPayService.ReturnUrlVnPay(returnUrlParams);
+            var result = await _vnPayService.ReturnUrlVnPay(returnUrlParams);
             if (!result.Succeeded)
             {
                 return Problem("Error");
             }
-            var paymentRequestUrl = result.Data ?? "";
-            return Redirect(paymentRequestUrl);
+
+            var paymentRequestUrl = result.Data;
+            return Redirect("paymentRequestUrl");
         }
     }
 }

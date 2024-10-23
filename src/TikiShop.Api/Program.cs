@@ -19,6 +19,7 @@ builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddSingleton<TikiShopDapperContext>();
 builder.Services.AddTransient<ICatalogQueries, EfCatalogQueries>();
+//builder.Services.AddTransient<ICatalogQueries, CatalogQueries>();
 builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
@@ -88,6 +89,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins("https://localhost:7258")
+            .WithOrigins("http://localhost:4200")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials(); // Allow to send cookies

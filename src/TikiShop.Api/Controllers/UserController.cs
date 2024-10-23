@@ -52,12 +52,7 @@ namespace TikiShop.Api.Controllers
         {
             var command = new UpdateAddressCommand(id, req.Receiver, req.PhoneNumber, req.Street, req.City, req.State, req.Country, req.ZipCode);
             var result = await _mediator.Send(command);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Created();
+            return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,12 +62,7 @@ namespace TikiShop.Api.Controllers
         {
             var command = new DeleteAddressCommand(id);
             var result = await _mediator.Send(command);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Created();
+            return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]

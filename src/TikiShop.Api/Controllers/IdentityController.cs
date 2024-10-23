@@ -9,26 +9,14 @@ namespace TikiShop.Api.Controllers
     [Route("/api/v1")]
     public class IdentityController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
         private readonly IIdentityService _identityService;
-        private readonly IEmailSender<User> _emailSender;
-        private readonly ILogger<IdentityController> _logger;
         private readonly JwtConfig _jwtConfig;
-        private readonly ITokenService _tokenService;
 
         public IdentityController(
-            UserManager<User> userManager,
-            IEmailSender<User> emailSender,
-            ILogger<IdentityController> logger,
             IOptions<JwtConfig> jwtOptions,
-            ITokenService tokenService,
             IIdentityService identityService)
         {
-            _userManager = userManager;
-            _emailSender = emailSender;
-            _tokenService = tokenService;
             _identityService = identityService;
-            _logger = logger;
             _jwtConfig = jwtOptions.Value;
         }
 
@@ -38,12 +26,7 @@ namespace TikiShop.Api.Controllers
         public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailRequest req)
         {
             var result = await _identityService.ConfirmEmail(req.Email, req.Code);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Ok();
+            return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
         }
 
 
@@ -80,7 +63,6 @@ namespace TikiShop.Api.Controllers
             }
             this.HttpContext.Response.Cookies.Delete("access-token");
             this.HttpContext.Response.Cookies.Delete("refresh-token");
-
             return Ok();
         }
 
@@ -91,12 +73,7 @@ namespace TikiShop.Api.Controllers
         public async Task<IActionResult> Register(RegisterRequest req)
         {
             var result = await _identityService.Register(req.UserName, req.Email, req.Password);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Created();
+            return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -125,12 +102,7 @@ namespace TikiShop.Api.Controllers
             var domainName = HttpContext.Request.Host.Value;
             var redirectUrl = $"https://{domainName}/api/v1/external-login-callback?returnUrl={returnUrl}";
             var result = await _identityService.ExternalLogin(provider, redirectUrl);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Challenge(result.Data!, provider);
+            return result.Succeeded ? Challenge(result.Data!, provider) : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status302Found)]
@@ -172,12 +144,7 @@ namespace TikiShop.Api.Controllers
         public async Task<IActionResult> ResendConfirmEmail(ResendConfirmEmailRequest req)
         {
             var result = await _identityService.ResendConfirmEmail(req.Email);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Ok();
+            return result.Succeeded ? Ok() : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -186,12 +153,7 @@ namespace TikiShop.Api.Controllers
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest req)
         {
             var result = await _identityService.ForgotPassword(req.Email);
-            if (!result.Succeeded)
-            {
-                return Problem(result.Errors.FirstOrDefault());
-            }
-
-            return Ok();
+            return result.Succeeded ? Ok() : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -216,7 +178,6 @@ namespace TikiShop.Api.Controllers
             }
             this.HttpContext.Response.Cookies.Delete("access-token");
             this.HttpContext.Response.Cookies.Delete("refresh-token");
-
             return Ok();
         }
 

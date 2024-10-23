@@ -104,8 +104,11 @@ namespace TikiShop.Core.Services.IdentityService
             }
 
             // Create Basket For User
-            var userId = await _userManager.GetUserIdAsync(user);
-            var serviceResult = await _mediator.Send(new CreateBasketCommand(Convert.ToInt32(userId)));
+            var userCreated = await _userManager.Users
+                .AsNoTracking()
+                .Select(u => new { Email = u.Email, Id = u.Id })
+                .SingleAsync(u => u.Email == user.Email);
+            var serviceResult = await _mediator.Send(new CreateBasketCommand(Convert.ToInt32(userCreated.Id)));
             if (!serviceResult.Succeeded)
             {
                 return ServiceResult.Failed(serviceResult.Errors);
