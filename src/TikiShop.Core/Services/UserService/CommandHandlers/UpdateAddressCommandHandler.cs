@@ -1,4 +1,7 @@
-﻿using TikiShop.Core.Services.UserService.Commands;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using TikiShop.Core.Services.UserService.Commands;
 using TikiShop.Infrastructure;
 
 namespace TikiShop.Core.Services.UserService.CommandHandlers
@@ -6,9 +9,9 @@ namespace TikiShop.Core.Services.UserService.CommandHandlers
     internal class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressCommand, ServiceResult>
     {
         private readonly TikiShopDbContext _context;
-        private readonly ILogger<UpdateAddressCommand> _logger;
+        private readonly ILogger<UpdateAddressCommandHandler> _logger; // Đổi tên cho logger
 
-        public UpdateAddressCommandHandler(TikiShopDbContext context, ILogger<UpdateAddressCommand> logger)
+        public UpdateAddressCommandHandler(TikiShopDbContext context, ILogger<UpdateAddressCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
@@ -16,10 +19,13 @@ namespace TikiShop.Core.Services.UserService.CommandHandlers
 
         public async Task<ServiceResult> Handle(UpdateAddressCommand request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Starting to update address with Id: {request.Id}");
+
             var address = await _context.Addresses.FindAsync(request.Id);
 
             if (address is null)
             {
+                _logger.LogWarning($"Address not found for Id: {request.Id}");
                 return ServiceResult.Failed("Invalid Request");
             }
 
@@ -36,11 +42,12 @@ namespace TikiShop.Core.Services.UserService.CommandHandlers
             {
                 _context.Addresses.Update(address);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation($"Address with Id: {request.Id} updated successfully.");
                 return ServiceResult.Success;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, $"Error occurred while updating address with Id: {request.Id}");
                 return ServiceResult.Failed();
             }
         }

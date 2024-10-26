@@ -25,7 +25,7 @@ namespace TikiShop.Infrastructure
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<PaymentProvider> PaymentProviders { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductAttribute> ProductAttribute { get; set; }
+        public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<ProductSku> ProductSkus { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<WishList> WishLists { get; set; }

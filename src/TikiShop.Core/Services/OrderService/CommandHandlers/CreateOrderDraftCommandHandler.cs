@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using Microsoft.VisualBasic;
 using TikiShop.Core.Services.CatalogService.CommandHandlers;
 using TikiShop.Core.Services.OrderService.Commands;
 using TikiShop.Infrastructure;
@@ -11,9 +10,9 @@ namespace TikiShop.Core.Services.OrderService.CommandHandlers;
 internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraftCommand, ServiceResult>
 {
     private readonly TikiShopDbContext _context;
-    private readonly ILogger<CreateBrandCommandHandler> _logger;
+    private readonly ILogger<CreateOrderDraftCommandHandler> _logger;
 
-    public CreateOrderDraftCommandHandler(TikiShopDbContext context, ILogger<CreateBrandCommandHandler> logger)
+    public CreateOrderDraftCommandHandler(TikiShopDbContext context, ILogger<CreateOrderDraftCommandHandler> logger)
     {
         _context = context;
         _logger = logger;
@@ -26,15 +25,16 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
                 .AnyAsync(u => u.Id == request.BuyerId);
         if (!isExistUser)
         {
+            _logger.LogWarning($"User with ID {request.BuyerId} does not exist.");
             return ServiceResult.Failed("Request Invalid");
         }
 
         var address = await _context.Addresses
             .AsNoTracking()
-            .SingleOrDefaultAsync(a => a.Id == request.AddressId &&
-                                       a.UserId == request.BuyerId);
+            .SingleOrDefaultAsync(a => a.Id == request.AddressId && a.UserId == request.BuyerId);
         if (address is null)
         {
+            _logger.LogWarning($"Address with ID {request.AddressId} not found for user {request.BuyerId}.");
             return ServiceResult.Failed("Address Invalid");
         }
 
@@ -45,6 +45,7 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
             string.IsNullOrEmpty(address.State) ||
             string.IsNullOrEmpty(address.Street))
         {
+            _logger.LogWarning($"Invalid address details for user {request.BuyerId}, address ID {request.AddressId}.");
             return ServiceResult.Failed("Address Invalid");
         }
 
@@ -59,6 +60,7 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
             OrderItems = new(),
             Total = 0
         };
+
         foreach (var item in request.Items)
         {
             var product = await _context.ProductSkus
@@ -73,6 +75,7 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
 
             if (product is null || item.Quantity < 0 || item.Quantity > product.QuantityStock)
             {
+                _logger.LogWarning($"Invalid item: {item.ProductSkuId}, Quantity: {item.Quantity}, Stock: {product?.QuantityStock}");
                 return ServiceResult.Failed($"Item {item.ProductSkuId} Invalid");
             }
 
@@ -96,7 +99,7 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            _logger.LogError(ex.Message);
+            _logger.LogError($"Error while creating order draft: {ex.Message}");
             return ServiceResult.Failed();
         }
     }

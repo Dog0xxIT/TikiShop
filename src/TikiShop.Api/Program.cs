@@ -19,7 +19,6 @@ builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddSingleton<TikiShopDapperContext>();
 builder.Services.AddTransient<ICatalogQueries, EfCatalogQueries>();
-//builder.Services.AddTransient<ICatalogQueries, CatalogQueries>();
 builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddTransient<IOrderQueries, OrderQueries>();
 builder.Services.AddTransient<IBasketQueries, BasketQueries>();
@@ -35,7 +34,7 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddDbContext<TikiShopDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Config Identity important
+
 builder.Services
     .AddIdentityCore<User>(options =>
     {
@@ -45,7 +44,7 @@ builder.Services
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.AllowedForNewUsers = true;
     })
-    .AddRoles<IdentityRole<int>>() // Add Role Manage Service
+    .AddRoles<IdentityRole<int>>()
     .AddSignInManager()
     .AddEntityFrameworkStores<TikiShopDbContext>()
     .AddDefaultTokenProviders();
@@ -54,25 +53,25 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddCookie(IdentityConstants.ExternalScheme)
     .AddJwtBearer(options =>
-        {
-            var jwtConfig = new JwtConfig();
-            builder.Configuration.GetSection(JwtConfig.SectionName).Bind(jwtConfig);
+    {
+        var jwtConfig = new JwtConfig();
+        builder.Configuration.GetSection(JwtConfig.SectionName).Bind(jwtConfig);
 
-            options.TokenValidationParameters = new TokenValidationParameters
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = jwtConfig.Issuer,
+            ValidAudience = jwtConfig.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
             {
-                ValidIssuer = jwtConfig.Issuer,
-                ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
-            };
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    context.Token = context.Request.Cookies["access-token"]; // Get token from cookie
-                    return Task.CompletedTask;
-                },
-            };
-        })
+                context.Token = context.Request.Cookies["access-token"];
+                return Task.CompletedTask;
+            },
+        };
+    })
     .AddGoogle(options =>
     {
         var ggOAuthConfig = builder.Configuration.GetSection("GoogleOAuth");
@@ -81,7 +80,6 @@ builder.Services
         options.SignInScheme = IdentityConstants.ExternalScheme;
         options.CallbackPath = "/signin-google";
     });
-
 
 builder.Services.AddCors(options =>
 {
@@ -92,19 +90,17 @@ builder.Services.AddCors(options =>
             .WithOrigins("http://localhost:4200")
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials(); // Allow to send cookies
+            .AllowCredentials();
     });
 });
 
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        }
-    );
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -130,7 +126,7 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            []
+            new string[] {}
         }
     };
 
@@ -155,17 +151,21 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddHttpLogging(logging =>
+builder.Services.AddW3CLogging(logging =>
 {
-    logging.LoggingFields = HttpLoggingFields.All;
-    logging.RequestBodyLogLimit = 4096;
-    logging.ResponseBodyLogLimit = 4096;
-    logging.CombineLogs = true;
+    logging.LoggingFields = W3CLoggingFields.All;
+    logging.AdditionalRequestHeaders.Add("x-forwarded-for");
+    logging.AdditionalRequestHeaders.Add("x-client-ssl-protocol");
+    logging.FileSizeLimit = 5 * 1024 * 1024;
+    logging.RetainedFileCountLimit = 2;
+    logging.LogDirectory = @"D:\Personal\IT\projects\TikiShop\logs";
+    logging.FlushInterval = TimeSpan.FromSeconds(2);
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseW3CLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -173,18 +173,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowSpecificOrigin");
-
-app.UseHttpLogging();
-
-//app.MapIdentityApi<IdentityUser>();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
-

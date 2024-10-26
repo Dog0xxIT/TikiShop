@@ -15,8 +15,8 @@ public partial class Home
 
     private bool _visibleLoader;
     private GetListProductRequest _getListProductRequest;
-    private PaginationResponse<GetListProductResponse> _productPaginationResponse;
-    private List<GetAllCategoriesResponse> _categoryList;
+    private PaginationResponse<GetListProductsResponse> _productPaginationResponse;
+    private List<GetListCategoriesResponse> _categoryList;
     private List<string> _sortOptions = ["Price Low To High", "Price High To Low", "Newest", "Best Seller"];
     private string SelectedSortOption;
     private double _minPrice;
@@ -56,7 +56,7 @@ public partial class Home
 
     private async Task OnClickCategory(PanelBarItemClickEventArgs args)
     {
-        var item = (GetAllCategoriesResponse)args.Item;
+        var item = (GetListCategoriesResponse)args.Item;
         _getListProductRequest.Categories = "";
         _getListProductRequest.Categories += item.Id;
         _visibleLoader = true;

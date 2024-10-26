@@ -7,9 +7,9 @@ namespace TikiShop.Core.Services.CatalogService.Queries;
 
 public interface ICatalogQueries
 {
-    Task<PaginationResponse<ProductDto>> GetListProducts(GetListProductRequest req);
-    Task<ProductDto> GetProductById(int id);
-    Task<PaginationResponse<BrandDto>> GetListBrands(PaginationRequest req);
-    Task<List<CategoryDto>> GetCategoriesHierarchy();
-    Task<PaginationResponse<CategoryDto>> GetCategories( PaginationRequest req);
+    Task<PaginationResponse<GetListProductsResponse>> GetListProducts(GetListProductRequest req);
+    Task<GetProductByIdResponse> GetProductById(int id);
+    Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req);
+    Task<List<GetListCategoriesResponse>> GetCategoriesHierarchy();
+    Task<PaginationResponse<GetListCategoriesResponse>> GetCategories( PaginationRequest req);
 }

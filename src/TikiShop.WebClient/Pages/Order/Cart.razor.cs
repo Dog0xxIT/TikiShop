@@ -31,7 +31,6 @@ public partial class Cart
         {
             Quantity = qty,
             ProductSkuId = productId,
-            ProductVariantId = productVariantId,
         };
         _visibleLoader = true;
         var resultObject = await _basketService.UpdateBasketItem(req);

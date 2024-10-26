@@ -16,44 +16,37 @@ namespace TikiShop.Core.Services.BasketService.Queries
 
         public async Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId)
         {
-            return new();
-            /*
-            var result = new GetBasketByCustomerIdResponse
-            {
-                BuyerId = buyerId,
-                Total = 0
-            };
+            _logger.LogInformation($"Starting to retrieve basket for BuyerId: {buyerId}"); // Thêm logging với string interpolation
 
-            var basket = await _context.Baskets
+            var result = await _context.Baskets
                 .AsNoTracking()
-                .Select(b => new { Id = b.Id, BuyerId = b.BuyerId })
-                .SingleOrDefaultAsync(b => b.BuyerId == buyerId);
+                .Select(basket => 
+                    new GetBasketByCustomerIdResponse
+                    {
+                        BuyerId = basket.BuyerId,
+                        Total = basket.Total,
+                        Items = basket.Items.Select(bi => new GetBasketByCustomerIdResponse.Item
+                        {
+                            Id = bi.Id,
+                            Quantity = bi.Quantity,
+                            PictureUrl = bi.ProductSku.Product.ThumbnailUrl,
+                            UnitPrice = bi.ProductSku.Price,
+                            ProductId = bi.ProductSkuId,
+                            Sku = bi.ProductSku.Sku,
+                        }).ToList(),
+                    })
+                .SingleOrDefaultAsync(basket => basket.BuyerId == buyerId);
 
-            if (basket is null)
+            if (result != null)
             {
-                return result;
+                _logger.LogInformation($"Successfully retrieved basket for BuyerId: {buyerId}"); // Thêm logging với string interpolation
+            }
+            else
+            {
+                _logger.LogWarning($"No basket found for BuyerId: {buyerId}"); // Thêm logging cho trường hợp không tìm thấy
             }
 
-            var basketItems = await _context.BasketItems
-                .AsNoTracking()
-                .Where(bi => bi.BasketId == basket.Id)
-                .Include(bi => bi.Product)
-                .Include(bi => bi.ProductVariant)
-                .Select(bi => new GetBasketByCustomerIdResponse.Item
-                {
-                    Id = bi.Id,
-                    ProductSkuId = bi.ProductSkuId,
-                    ProductVariantId = bi.ProductVariantId,
-                    Quantity = bi.Quantity,
-                    PictureUrl = bi.Product.ThumbnailUrl ?? "",
-                    ProductName = bi.Product.Name,
-                    ProductVariantName = bi.ProductVariantId != null ? bi.ProductVariant!.Name : "",
-                }).ToListAsync();
-
-            result.Items.AddRange(basketItems);
-
-            return result;
-            */
+            return result ?? new(); 
         }
     }
 }

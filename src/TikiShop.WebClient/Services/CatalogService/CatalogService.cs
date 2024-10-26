@@ -24,27 +24,27 @@ namespace TikiShop.WebClient.Services.CatalogService
             return resultObject.Data;
         }
 
-        public async Task<List<GetAllCategoriesResponse>> GetAllCategoriesHierarchy()
+        public async Task<List<GetListCategoriesResponse>> GetAllCategoriesHierarchy()
         {
-            var resultObject = await _coreHttpClient.GetAsync<List<GetAllCategoriesResponse>>(
+            var resultObject = await _coreHttpClient.GetAsync<List<GetListCategoriesResponse>>(
                 clientName: "TikiShopApi",
                 uri: "api/v1/catalog/categories/hierarchy");
 
             return resultObject.Data;
         }
 
-        public async Task<PaginationResponse<GetAllCategoriesResponse>> GetAllCategories()
+        public async Task<PaginationResponse<GetListCategoriesResponse>> GetAllCategories()
         {
-            var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetAllCategoriesResponse>>(
+            var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListCategoriesResponse>>(
                 clientName: "TikiShopApi",
                 uri: "api/v1/catalog/categories");
 
             return resultObject.Data;
         }
 
-        public async Task<PaginationResponse<GetListProductResponse>> GetListProducts(PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<GetListProductsResponse>> GetListProducts(PaginationRequest paginationRequest)
         {
-            var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListProductResponse>>(
+            var resultObject = await _coreHttpClient.GetAsync<PaginationResponse<GetListProductsResponse>>(
                  clientName: "TikiShopApi",
                  uri: "api/v1/catalog/products",
                  queryObj: paginationRequest);

@@ -26,15 +26,16 @@ namespace TikiShop.Core.Services.OrderService.CommandHandlers
                 .AnyAsync(u => u.Id == request.BuyerId);
             if (!isExistUser)
             {
+                _logger.LogWarning($"User with ID {request.BuyerId} does not exist.");
                 return ServiceResult.Failed("Request Invalid");
             }
 
             var address = await _context.Addresses
                 .AsNoTracking()
-                .SingleOrDefaultAsync(a => a.Id == request.AddressId &&
-                                           a.UserId == request.BuyerId);
+                .SingleOrDefaultAsync(a => a.Id == request.AddressId && a.UserId == request.BuyerId);
             if (address is null)
             {
+                _logger.LogWarning($"Address with ID {request.AddressId} not found for user {request.BuyerId}.");
                 return ServiceResult.Failed("Address Invalid");
             }
 
@@ -45,6 +46,7 @@ namespace TikiShop.Core.Services.OrderService.CommandHandlers
                 string.IsNullOrEmpty(address.State) ||
                 string.IsNullOrEmpty(address.Street))
             {
+                _logger.LogWarning($"Invalid address details for user {request.BuyerId}, address ID {request.AddressId}.");
                 return ServiceResult.Failed("Address Invalid");
             }
 
@@ -59,6 +61,7 @@ namespace TikiShop.Core.Services.OrderService.CommandHandlers
                 OrderItems = new(),
                 Total = 0
             };
+
             foreach (var item in request.Items)
             {
                 var product = await _context.ProductSkus
@@ -73,6 +76,7 @@ namespace TikiShop.Core.Services.OrderService.CommandHandlers
 
                 if (product is null || item.Quantity < 0 || item.Quantity > product.QuantityStock)
                 {
+                    _logger.LogWarning($"Invalid item: {item.ProductSkuId}, Quantity: {item.Quantity}, Stock: {product?.QuantityStock}");
                     return ServiceResult.Failed($"Item {item.ProductSkuId} Invalid");
                 }
 
@@ -96,7 +100,7 @@ namespace TikiShop.Core.Services.OrderService.CommandHandlers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error while creating order: {ex.Message}");
                 return ServiceResult.Failed();
             }
         }

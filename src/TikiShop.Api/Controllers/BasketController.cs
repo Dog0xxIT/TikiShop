@@ -34,7 +34,7 @@ namespace TikiShop.Api.Controllers
         public async Task<IActionResult> UpdateBasketItem(UpdateBasketItemRequest req)
         {
             var userId = Convert.ToInt32(this.User.FindFirstValue(ClaimTypes.Sid));
-            var command = new UpdateQuantityCommand(userId, req.ProductSkuId, req.Quantity);
+            var command = new UpdateQuantityCommand(userId, req.ProductId, req.Quantity);
             var result = await _mediator.Send(command);
             if (!result.Succeeded)
             {

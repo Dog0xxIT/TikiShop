@@ -24,9 +24,18 @@ namespace TikiShop.Core.Services.CloudinaryService
                 File = new FileDescription(fileName, stream),
                 Folder = "EShop"
             };
-            var result = await _cloudinary.UploadAsync(uploadParams);
-            _logger.LogInformation(result.JsonObj.ToString());
-            return result.SecureUrl;
+
+            try
+            {
+                var result = await _cloudinary.UploadAsync(uploadParams);
+                _logger.LogInformation($"Image uploaded: {result.JsonObj}");
+                return result.SecureUrl;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while uploading the image.");
+                throw; // Re-throw the exception for further handling if necessary
+            }
         }
 
         public async Task<ServiceResult> DeleteImage(int productId)

@@ -7,7 +7,7 @@ namespace TikiShop.WebClient.Components.Product;
 
 public partial class ProductCart
 {
-    [Parameter, EditorRequired] public GetListProductResponse ProductInfo { get; set; }
+    [Parameter, EditorRequired] public GetListProductsResponse ProductsInfo { get; set; }
 
     [CascadingParameter(Name = "Notification")]
     private TelerikNotification _notificatioRef { get; set; }

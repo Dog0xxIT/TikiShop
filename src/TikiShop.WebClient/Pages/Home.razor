@@ -21,12 +21,12 @@
                              OnItemClick="OnClickCategory"
                              Class="rounded-4 shadow">
                 <PanelBarBindings>
-                    <PanelBarBinding ParentIdField="@nameof(GetAllCategoriesResponse.ParentId)"
-                                     TextField="@nameof(GetAllCategoriesResponse.Name)"
-                                     ItemsField="@nameof(GetAllCategoriesResponse.Childs)"
-                                     IconField="@nameof(GetAllCategoriesResponse.ThumbnailUrl)"
-                                     HasChildrenField="@nameof(GetAllCategoriesResponse.HasChild)"
-                                     IdField="@nameof(GetAllCategoriesResponse.Id)"></PanelBarBinding>
+                    <PanelBarBinding ParentIdField="@nameof(GetListCategoriesResponse.ParentId)"
+                                     TextField="@nameof(GetListCategoriesResponse.Name)"
+                                     ItemsField="@nameof(GetListCategoriesResponse.Child)"
+                                     IconField="@nameof(GetListCategoriesResponse.ThumbnailUrl)"
+                                     HasChildrenField="@nameof(GetListCategoriesResponse.HasChild)"
+                                     IdField="@nameof(GetListCategoriesResponse.Id)"></PanelBarBinding>
                 </PanelBarBindings>
             </TelerikPanelBar>
         </GridLayoutItem>
@@ -92,7 +92,7 @@
                     @foreach (var product in _productPaginationResponse.Data)
                     {
                         <GridLayoutItem>
-                            <ProductCart ProductInfo="@product"></ProductCart>
+                            <ProductCart ProductsInfo="@product"></ProductCart>
                         </GridLayoutItem>
                     }
                 </GridLayoutItems>

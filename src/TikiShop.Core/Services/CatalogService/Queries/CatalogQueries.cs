@@ -22,7 +22,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             _logger = logger;
         }
 
-        public async Task<PaginationResponse<ProductDto>> GetListProducts(GetListProductRequest req)
+        public async Task<PaginationResponse<GetListProductsResponse>> GetListProducts(GetListProductRequest req)
         {
             using var conn = _dapperContext.CreateConnection();
             var sql = $"""
@@ -45,7 +45,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<ProductDto> GetProductById(int id)
+        public async Task<GetProductByIdResponse> GetProductById(int id)
         {
             var sql = $"""
                        select * from products
@@ -57,7 +57,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<PaginationResponse<BrandDto>> GetListBrands(PaginationRequest req)
+        public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
         {
             var sql = $"""
                        select * from brands
@@ -68,7 +68,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<List<CategoryDto>> GetCategoriesHierarchy()
+        public async Task<List<GetListCategoriesResponse>> GetCategoriesHierarchy()
         {
             var sql = $"""
                        select * from brands
@@ -79,7 +79,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             return new();
         }
 
-        public async Task<PaginationResponse<CategoryDto>> GetCategories(PaginationRequest req)
+        public async Task<PaginationResponse<GetListCategoriesResponse>> GetCategories(PaginationRequest req)
         {
             var sql = $"""
                        select * from categories

@@ -19,8 +19,15 @@ public class TokenService : ITokenService
 
     public string GenerateAccessToken(IEnumerable<Claim> claims)
     {
+        if (claims == null || !claims.Any())
+        {
+            _logger.LogWarning("No claims provided for token generation.");
+            throw new ArgumentException("Claims cannot be null or empty.", nameof(claims));
+        }
+
         var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey));
         var signingCredentials = new SigningCredentials(signKey, _jwtConfig.Algorithm);
+
         var optionsHeader = new Dictionary<string, string>
         {
             ["alg"] = signingCredentials.Algorithm,
@@ -42,6 +49,8 @@ public class TokenService : ITokenService
 
     public string GenerateRefreshToken()
     {
-        return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        var refreshToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        _logger.LogInformation("Generated a new refresh token.");
+        return refreshToken;
     }
 }
