@@ -67,13 +67,13 @@ namespace TikiShop.Api.Controllers
         }
 
 
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest req)
         {
             var result = await _identityService.Register(req.UserName, req.Email, req.Password);
-            return result.Succeeded ? Created() : Problem(result.Errors.FirstOrDefault());
+            return result.Succeeded ? Ok() : Problem(result.Errors.FirstOrDefault());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

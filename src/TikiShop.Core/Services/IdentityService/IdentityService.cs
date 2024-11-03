@@ -96,7 +96,7 @@ namespace TikiShop.Core.Services.IdentityService
             var user = new User
             {
                 Email = email,
-                UserName = userName,
+                UserName = userName
             };
 
             var identityResult = await _userManager.CreateAsync(user, password);

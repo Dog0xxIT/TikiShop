@@ -25,7 +25,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
         {
             if (req.MinPrice > req.MaxPrice)
             {
-                _logger.LogWarning($"Invalid price range: MinPrice: {req.MinPrice}, MaxPrice: {req.MaxPrice}"); // Logging giá trị không hợp lệ
+                _logger.LogWarning($"Invalid price range: MinPrice: {req.MinPrice}, MaxPrice: {req.MaxPrice}"); 
                 return new();
             }
 
@@ -38,7 +38,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
             queryable = ApplySorting(queryable, req);
             var rnd = new Random();
 
-            _logger.LogInformation($"Retrieving product list for page {req.Page} with limit {req.Limit}"); // Logging trước khi lấy dữ liệu
+            _logger.LogInformation($"Retrieving product list for page {req.Page} with limit {req.Limit}");
 
             var productDtoList = await queryable
                 .Select(product =>
@@ -75,15 +75,14 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 }
             };
 
-            _logger.LogInformation($"Successfully retrieved {productDtoList.Count} products for page {req.Page}"); // Logging thành công
-
+            _logger.LogInformation($"Successfully retrieved {productDtoList.Count} products for page {req.Page}"); 
             return response;
         }
 
         public async Task<GetProductByIdResponse> GetProductById(int id)
         {
             var rnd = new Random();
-            _logger.LogInformation($"Retrieving product details for ProductId: {id}"); // Logging trước khi lấy dữ liệu
+            _logger.LogInformation($"Retrieving product details for ProductId: {id}"); 
 
             var productDto = await _context.Products
                 .AsNoTracking()
@@ -136,11 +135,11 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
             if (productDto != null)
             {
-                _logger.LogInformation($"Successfully retrieved product details for ProductId: {id}"); // Logging thành công
+                _logger.LogInformation($"Successfully retrieved product details for ProductId: {id}");
             }
             else
             {
-                _logger.LogWarning($"No product found for ProductId: {id}"); // Logging trường hợp không tìm thấy
+                _logger.LogWarning($"No product found for ProductId: {id}"); 
             }
 
             return productDto ?? new();
@@ -148,7 +147,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
 
         public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
         {
-            _logger.LogInformation($"Retrieving brand list for page {req.Page} with limit {req.Limit}"); // Logging trước khi lấy dữ liệu
+            _logger.LogInformation($"Retrieving brand list for page {req.Page} with limit {req.Limit}"); 
 
             var queryable = _context.Brands
                 .Skip(req.Page)
@@ -176,20 +175,20 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 }
             };
 
-            _logger.LogInformation($"Successfully retrieved {brandsDto.Count} brands for page {req.Page}"); // Logging thành công
-
+            _logger.LogInformation($"Successfully retrieved {brandsDto.Count} brands for page {req.Page}"); 
             return response;
         }
 
         public async Task<List<GetListCategoriesResponse>> GetCategoriesHierarchy()
         {
-            _logger.LogInformation("Retrieving categories hierarchy"); // Logging trước khi lấy dữ liệu
+            _logger.LogInformation("Retrieving categories hierarchy"); 
 
             var categories = await _context.Categories
                 .AsNoTracking()
                 .ToListAsync();
 
             var categoriesDto = categories
+                .Where(category => category.ParentId == null)
                 .Select(category => new GetListCategoriesResponse
                 {
                     Id = category.Id,
@@ -199,15 +198,15 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                     Child = GetChildCategories(category.Id, categories, 1),
                 })
                 .ToList();
-
-            _logger.LogInformation($"Successfully retrieved {categoriesDto.Count} categories"); // Logging thành công
+            
+            _logger.LogInformation($"Successfully retrieved {categoriesDto.Count} categories"); 
 
             return categoriesDto;
         }
 
         public async Task<PaginationResponse<GetListCategoriesResponse>> GetCategories(PaginationRequest req)
         {
-            _logger.LogInformation($"Retrieving categories for page {req.Page} with limit {req.Limit}"); // Logging trước khi lấy dữ liệu
+            _logger.LogInformation($"Retrieving categories for page {req.Page} with limit {req.Limit}"); 
 
             var queryable = _context.Categories
                 .Skip(req.Page)
@@ -243,7 +242,7 @@ namespace TikiShop.Core.Services.CatalogService.Queries
                 }
             };
 
-            _logger.LogInformation($"Successfully retrieved {categoriesDto.Count} categories for page {req.Page}"); // Logging thành công
+            _logger.LogInformation($"Successfully retrieved {categoriesDto.Count} categories for page {req.Page}");
 
             return response;
         }

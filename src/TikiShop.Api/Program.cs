@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
