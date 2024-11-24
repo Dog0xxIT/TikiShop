@@ -1,10 +1,9 @@
-﻿namespace TikiShop.Infrastructure.Common
+﻿namespace TikiShop.Infrastructure.Common;
+
+public class RolesConstant
 {
-    public class RolesConstant
-    {
-        public const string Admin = "Admin";
-        public const string Guest = "Guest";
-        public const string Seller = "Seller";
-        public const string Customer = "Customer";
-    }
+    public const string Admin = "Admin";
+    public const string Guest = "Guest";
+    public const string Seller = "Seller";
+    public const string Customer = "Customer";
 }

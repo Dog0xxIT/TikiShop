@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TikiShop.Core.Configurations;
+using TikiShop.Model.Configurations;
 
 namespace TikiShop.Core.Services.TokenService;
 
@@ -36,8 +36,8 @@ public class TokenService : ITokenService
         var header = new JwtHeader(signingCredentials, optionsHeader);
 
         var payload = new JwtPayload(
-            issuer: _jwtConfig.Issuer,
-            audience: _jwtConfig.Audience,
+            _jwtConfig.Issuer,
+            _jwtConfig.Audience,
             expires: DateTime.UtcNow.AddDays(Convert.ToInt64(_jwtConfig.Expires)),
             notBefore: DateTime.UtcNow,
             claims: claims);

@@ -1,8 +1,7 @@
-﻿namespace TikiShop.Core.Services.OrderService.Queries
+﻿namespace TikiShop.Core.Services.OrderService.Queries;
+
+public interface IOrderQueries
 {
-    public interface IOrderQueries
-    {
-        Task<dynamic> GetOrderByBuyerId(int buyerId);
-        Task<dynamic> CartTypes();
-    }
+    Task<dynamic> GetOrderByBuyerId(int buyerId);
+    Task<dynamic> CartTypes();
 }

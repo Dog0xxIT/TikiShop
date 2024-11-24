@@ -1,4 +1,4 @@
-﻿using TikiShop.Shared.ResponseModels.Basket;
+﻿using TikiShop.Model.ResponseModels.Basket;
 
 namespace TikiShop.Core.Services.BasketService.Queries;
 

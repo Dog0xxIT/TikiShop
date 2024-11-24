@@ -2,18 +2,20 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
-namespace TikiShop.Infrastructure
+namespace TikiShop.Infrastructure;
+
+public class TikiShopDapperContext
 {
-    public class TikiShopDapperContext
+    private readonly string _connectionString;
+
+    public TikiShopDapperContext(IConfiguration configuration)
     {
-        private readonly string _connectionString;
+        _connectionString = configuration.GetConnectionString("DefaultConnection") ??
+                            throw new ArgumentNullException(nameof(_connectionString));
+    }
 
-        public TikiShopDapperContext(IConfiguration configuration)
-        {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(_connectionString));
-        }
-
-        public IDbConnection CreateConnection()
-            => new SqlConnection(_connectionString);
+    public IDbConnection CreateConnection()
+    {
+        return new SqlConnection(_connectionString);
     }
 }

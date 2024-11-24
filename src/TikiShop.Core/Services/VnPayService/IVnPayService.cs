@@ -1,5 +1,5 @@
-﻿using TikiShop.Core.Dto;
-using TikiShop.Shared.RequestModels.Payment;
+﻿using TikiShop.Model.DTO;
+using TikiShop.Model.RequestModels.Payment;
 
 namespace TikiShop.Core.Services.VnPayService;
 

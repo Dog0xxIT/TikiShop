@@ -1,41 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
-    <PackageReference Include="Dapper" Version="2.1.35" />
-    <PackageReference Include="dotenv.net" Version="3.2.1" />
-    <PackageReference Include="EntityFramework" Version="6.5.1" />
-    <PackageReference Include="MailKit" Version="4.8.0" />
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="MediatR" Version="12.4.1" />
-    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
-    <PackageReference Include="MimeKit" Version="4.8.0" />
-    <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
-    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
-    <PackageReference Include="Z.EntityFramework.Extensions" Version="8.103.5" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="8.103.5" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="DomainValidations\**" />
+		<EmbeddedResource Remove="DomainValidations\**" />
+		<None Remove="DomainValidations\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DomainValidations\Basket\" />
-    <Folder Include="DomainValidations\Catalog\" />
-    <Folder Include="DomainValidations\Order\" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
+		<PackageReference Include="Dapper" Version="2.1.35" />
+		<PackageReference Include="dotenv.net" Version="3.2.1" />
+		<PackageReference Include="EntityFramework" Version="6.5.1" />
+		<PackageReference Include="MailKit" Version="4.8.0" />
+		<PackageReference Include="Mapster" Version="7.4.0" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
+		<PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+		<PackageReference Include="MimeKit" Version="4.8.0" />
+		<PackageReference Include="System.Linq" Version="4.3.0" />
+		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
+		<PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+		<PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+		<PackageReference Include="Z.EntityFramework.Extensions" Version="8.103.5" />
+		<PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="8.103.5" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj" />
-    <ProjectReference Include="..\TikiShop.Shared\TikiShop.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TikiShop.Infrastructure\TikiShop.Infrastructure.csproj" />
+		<ProjectReference Include="..\TikiShop.Model\TikiShop.Model.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Services\AuthService\Queries\" />
+		<Folder Include="Services\OrderService\CommandHandlers\" />
+	</ItemGroup>
 
 </Project>

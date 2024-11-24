@@ -1,12 +1,11 @@
-﻿using TikiShop.Shared.ResponseModels.Basket;
+﻿using TikiShop.Model.ResponseModels.Basket;
 
-namespace TikiShop.Core.Services.BasketService.Queries
+namespace TikiShop.Core.Services.BasketService.Queries;
+
+public class BasketQueries : IBasketQueries
 {
-    public class BasketQueries : IBasketQueries
+    public async Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId)
     {
-        public async Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

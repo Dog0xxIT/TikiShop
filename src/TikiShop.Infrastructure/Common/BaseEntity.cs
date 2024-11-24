@@ -1,28 +1,27 @@
-﻿namespace TikiShop.Infrastructure.Common
+﻿namespace TikiShop.Infrastructure.Common;
+
+public abstract class BaseEntity
 {
-    public abstract class BaseEntity
+    protected BaseEntity()
     {
-        public int Id { get; set; }
+        SetTimeCreated();
+    }
 
-        public double Created { get; private set; } // TimeStamp
+    public int Id { get; set; }
 
-        public double LastModified { get; private set; }  // TimeStamp
+    public double Created { get; private set; } // TimeStamp
 
-        public bool IsDeleted { get; set; }
+    public double LastModified { get; private set; } // TimeStamp
 
-        public void SetTimeCreated()
-        {
-            Created = DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds;
-        }
+    public bool IsDeleted { get; set; }
 
-        public void SetTimeLastModified()
-        {
-            LastModified = DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds;
-        }
+    public void SetTimeCreated()
+    {
+        Created = DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds;
+    }
 
-        protected BaseEntity()
-        {
-            SetTimeCreated();
-        }
+    public void SetTimeLastModified()
+    {
+        LastModified = DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds;
     }
 }

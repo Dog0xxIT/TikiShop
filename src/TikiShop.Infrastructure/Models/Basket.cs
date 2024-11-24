@@ -1,12 +1,9 @@
-﻿using TikiShop.Infrastructure.Common;
+﻿namespace TikiShop.Infrastructure.Models;
 
-namespace TikiShop.Infrastructure.Models
+public class Basket : BaseEntity
 {
-    public class Basket : BaseEntity
-    {
-        public int BuyerId { get; set; }
-        public User Buyer { get; set; }
-        public double Total { get; set; }
-        public List<BasketItem> Items { get; set; }
-    }
+    public int BuyerId { get; set; }
+    public User Buyer { get; set; }
+    public double Total { get; set; }
+    public List<BasketItem> Items { get; set; }
 }

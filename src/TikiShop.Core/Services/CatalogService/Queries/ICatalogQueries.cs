@@ -1,7 +1,7 @@
-﻿using TikiShop.Shared.RequestModels;
-using TikiShop.Shared.RequestModels.Catalog;
-using TikiShop.Shared.ResponseModels;
-using TikiShop.Shared.ResponseModels.Catalog;
+﻿using TikiShop.Model.RequestModels;
+using TikiShop.Model.RequestModels.Catalog;
+using TikiShop.Model.ResponseModels;
+using TikiShop.Model.ResponseModels.Catalog;
 
 namespace TikiShop.Core.Services.CatalogService.Queries;
 
@@ -11,5 +11,5 @@ public interface ICatalogQueries
     Task<GetProductByIdResponse> GetProductById(int id);
     Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req);
     Task<List<GetListCategoriesResponse>> GetCategoriesHierarchy();
-    Task<PaginationResponse<GetListCategoriesResponse>> GetCategories( PaginationRequest req);
+    Task<PaginationResponse<GetListCategoriesResponse>> GetCategories(PaginationRequest req);
 }

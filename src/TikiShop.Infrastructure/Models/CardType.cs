@@ -1,9 +1,6 @@
-﻿using TikiShop.Infrastructure.Common;
+﻿namespace TikiShop.Infrastructure.Models;
 
-namespace TikiShop.Infrastructure.Models
+public class CardType : BaseEntity
 {
-    public class CardType : BaseEntity
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }
