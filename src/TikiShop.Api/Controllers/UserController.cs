@@ -18,8 +18,6 @@ public class UserController : Controller
         _mediator = mediator;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpGet("addresses")]
     public async Task<IActionResult> GetAllAddress()
     {
@@ -28,10 +26,8 @@ public class UserController : Controller
         return Ok(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPost("addresses")]
-    public async Task<IActionResult> CreateAddress(CreateAddressRequest req)
+    public async Task<IActionResult> CreateAddress(CreateAddressReq req)
     {
         var userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.Sid));
         var command = new CreateAddressCommand(req.Receiver, req.PhoneNumber, req.Street, req.City, req.State,
@@ -44,9 +40,8 @@ public class UserController : Controller
         return BadRequest(result);
     }
 
-
     [HttpPut("addresses/{id}")]
-    public async Task<IActionResult> UpdateAddress([FromRoute] int id, UpdateAddressRequest req)
+    public async Task<IActionResult> UpdateAddress([FromRoute] int id, UpdateAddressReq req)
     {
         var command = new UpdateAddressCommand(id, req.Receiver, req.PhoneNumber, req.Street, req.City, req.State,
             req.Country, req.ZipCode);
@@ -58,8 +53,6 @@ public class UserController : Controller
         return BadRequest(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpDelete("addresses/{id}")]
     public async Task<IActionResult> DeleteAddress([FromRoute] int id)
     {
@@ -72,24 +65,18 @@ public class UserController : Controller
         return BadRequest(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPost("payments")]
     public async Task<IActionResult> CreatePayment()
     {
         return Created();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPatch("payments/{id}")]
     public async Task<IActionResult> UpdatePayment([FromRoute] int id)
     {
         return Ok();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpDelete("payments/{id}")]
     public async Task<IActionResult> DeletePayment([FromRoute] int id)
     {

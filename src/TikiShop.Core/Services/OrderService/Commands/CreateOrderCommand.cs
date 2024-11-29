@@ -47,7 +47,8 @@ internal class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, R
             string.IsNullOrEmpty(address.State) ||
             string.IsNullOrEmpty(address.Street))
         {
-            _logService.LogWarning($"Invalid address details for user {request.BuyerId}, address ID {request.AddressId}.");
+            _logService.LogWarning(
+                $"Invalid address details for user {request.BuyerId}, address ID {request.AddressId}.");
             return ResultObject<int>.Failed("Address Invalid");
         }
 

@@ -1,4 +1,6 @@
-﻿using TikiShop.Model.RequestModels.Payment;
+﻿using TikiShop.Core.ThirdServices.VnPayService;
+using TikiShop.Model.Enums;
+using TikiShop.Model.RequestModels.Payment;
 
 namespace TikiShop.Api.Controllers;
 
@@ -13,9 +15,6 @@ public class PaymentController : Controller
         _vnPayService = vnPayService;
     }
 
-    [ProducesResponseType(StatusCodes.Status302Found)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize(Roles = RolesConstant.Customer)]
     [HttpGet]
     [Route("vnpay/{orderId}")]
@@ -23,33 +22,27 @@ public class PaymentController : Controller
     {
         var ipAddress = Utils.GetIpAddress(HttpContext);
         var result = await _vnPayService.CreatePaymentUrl(orderId, ipAddress);
-        if (!result.Succeeded) return Problem("Error");
+        if (result.ResultCode == ResultCode.Failure) return Problem("Error");
         var paymentRequestUrl = result.Data ?? "";
         return Redirect(paymentRequestUrl);
     }
 
-    [ProducesResponseType(StatusCodes.Status302Found)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpGet]
     [Route("vnpay-return")]
-    public async Task<IActionResult> VnPayReturnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
+    public async Task<IActionResult> VnPayReturnUrlCallback([FromQuery] ReturnUrlReq returnUrlParams)
     {
         var result = await _vnPayService.ReturnUrlVnPay(returnUrlParams);
-        if (!result.Succeeded) return Problem("Error");
+        if (result.ResultCode == ResultCode.Failure) return Problem("Error");
         var paymentRequestUrl = result.Data;
         return Redirect("");
     }
 
-    [ProducesResponseType(StatusCodes.Status302Found)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpGet]
     [Route("IPN")]
-    public async Task<IActionResult> VnPayIpnUrlCallback([FromQuery] ReturnUrlRequest returnUrlParams)
+    public async Task<IActionResult> VnPayIpnUrlCallback([FromQuery] ReturnUrlReq returnUrlParams)
     {
         var result = await _vnPayService.ReturnUrlVnPay(returnUrlParams);
-        if (!result.Succeeded) return Problem("Error");
+        if (result.ResultCode == ResultCode.Failure) return Problem("Error");
 
         var paymentRequestUrl = result.Data;
         return Redirect("paymentRequestUrl");

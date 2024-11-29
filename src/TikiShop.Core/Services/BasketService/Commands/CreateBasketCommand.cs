@@ -1,5 +1,4 @@
-﻿using TikiShop.Core.Services.AuthService.Commands;
-using TikiShop.Model.DTO;
+﻿using TikiShop.Model.DTO;
 
 namespace TikiShop.Core.Services.BasketService.Commands;
 

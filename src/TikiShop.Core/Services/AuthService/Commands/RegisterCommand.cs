@@ -1,5 +1,5 @@
 ﻿using TikiShop.Core.Services.BasketService.Commands;
-using TikiShop.Core.Services.EmailService;
+using TikiShop.Core.ThirdServices.EmailService;
 using TikiShop.Infrastructure.Common;
 using TikiShop.Model.DTO;
 using TikiShop.Model.Enums;

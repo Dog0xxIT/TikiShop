@@ -13,7 +13,8 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
     private readonly TikiShopDbContext _context;
     private readonly ILogService<CreateOrderDraftCommandHandler> _logService;
 
-    public CreateOrderDraftCommandHandler(TikiShopDbContext context, ILogService<CreateOrderDraftCommandHandler> logService)
+    public CreateOrderDraftCommandHandler(TikiShopDbContext context,
+        ILogService<CreateOrderDraftCommandHandler> logService)
     {
         _context = context;
         _logService = logService;
@@ -46,7 +47,8 @@ internal class CreateOrderDraftCommandHandler : IRequestHandler<CreateOrderDraft
             string.IsNullOrEmpty(address.State) ||
             string.IsNullOrEmpty(address.Street))
         {
-            _logService.LogWarning($"Invalid address details for user {request.BuyerId}, address ID {request.AddressId}.");
+            _logService.LogWarning(
+                $"Invalid address details for user {request.BuyerId}, address ID {request.AddressId}.");
             return ResultObject<int>.Failed("Address Invalid");
         }
 

@@ -9,7 +9,8 @@ internal class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComm
     private readonly ILogService<ChangePasswordCommandHandler> _logService;
     private readonly UserManager<User> _userManager;
 
-    public ChangePasswordCommandHandler(ILogService<ChangePasswordCommandHandler> logService, UserManager<User> userManager)
+    public ChangePasswordCommandHandler(ILogService<ChangePasswordCommandHandler> logService,
+        UserManager<User> userManager)
     {
         _logService = logService;
         _userManager = userManager;

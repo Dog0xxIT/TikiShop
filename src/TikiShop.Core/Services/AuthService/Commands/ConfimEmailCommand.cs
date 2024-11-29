@@ -7,7 +7,7 @@ public record ConfirmEmailCommand(string Email, string Code) : IRequest<ResultOb
 
 internal class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, ResultObject<int>>
 {
-    private readonly ILogService<ConfirmEmailCommandHandler>_logService;
+    private readonly ILogService<ConfirmEmailCommandHandler> _logService;
     private readonly UserManager<User> _userManager;
 
     public ConfirmEmailCommandHandler(ILogService<ConfirmEmailCommandHandler> logService, UserManager<User> userManager)

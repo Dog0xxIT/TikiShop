@@ -9,7 +9,8 @@ internal class DeleteBasketItemCommandHandler : IRequestHandler<DeleteBasketItem
     private readonly TikiShopDbContext _context;
     private readonly ILogService<DeleteBasketItemCommandHandler> _logService;
 
-    public DeleteBasketItemCommandHandler(ILogService<DeleteBasketItemCommandHandler> logService, TikiShopDbContext context)
+    public DeleteBasketItemCommandHandler(ILogService<DeleteBasketItemCommandHandler> logService,
+        TikiShopDbContext context)
     {
         _logService = logService;
         _context = context;

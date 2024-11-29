@@ -1,8 +1,9 @@
-﻿using TikiShop.Model.ResponseModels.Basket;
+﻿using TikiShop.Model.DTO;
+using TikiShop.Model.ResponseModels.Basket;
 
 namespace TikiShop.Core.Services.BasketService.Queries;
 
 public interface IBasketQueries
 {
-    Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId);
+    Task<ResultObject<GetBasketByCustomerIdResp>> GetBasketByCustomerId(int buyerId);
 }

@@ -18,8 +18,10 @@ public class BasketController : Controller
         _mediator = mediator;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    /// <summary>
+    /// Retrieves the basket of a customer based on their user ID.
+    /// </summary>
+    /// <returns>An HTTP response with the customer's basket details.</returns>
     [HttpGet]
     public async Task<IActionResult> GetBasketByCustomerId()
     {
@@ -28,10 +30,13 @@ public class BasketController : Controller
         return Ok(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <summary>
+    /// Updates the quantity of an item in the user's basket.
+    /// </summary>
+    /// <param name="req">The request details containing the product ID and new quantity.</param>
+    /// <returns>An HTTP response indicating success or failure of the update operation.</returns>
     [HttpPatch]
-    public async Task<IActionResult> UpdateBasketItem(UpdateBasketItemRequest req)
+    public async Task<IActionResult> UpdateBasketItem(UpdateBasketItemReq req)
     {
         var userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.Sid));
         var command = new UpdateQuantityCommand(userId, req.ProductId, req.Quantity);
@@ -43,8 +48,11 @@ public class BasketController : Controller
         return BadRequest(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <summary>
+    /// Deletes an item from the user's basket.
+    /// </summary>
+    /// <param name="basketItemId">The ID of the basket item to delete.</param>
+    /// <returns>An HTTP response indicating success or failure of the deletion operation.</returns>
     [HttpDelete("{basketItemId}")]
     public async Task<IActionResult> DeleteBasketItem([FromRoute] int basketItemId)
     {
@@ -56,4 +64,5 @@ public class BasketController : Controller
         }
         return BadRequest(result);
     }
+
 }

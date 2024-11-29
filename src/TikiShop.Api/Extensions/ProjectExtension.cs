@@ -1,5 +1,6 @@
-﻿using TikiShop.Core.Services.EmailService;
-using TikiShop.Core.Services.LogService;
+﻿using TikiShop.Core.Services.LogService;
+using TikiShop.Core.ThirdServices.EmailService;
+using TikiShop.Core.ThirdServices.VnPayService;
 using TikiShop.Model.Configurations;
 
 namespace TikiShop.Api.Extensions;
@@ -19,7 +20,6 @@ public static class ProjectExtension
         services.AddScoped(typeof(ILogService<>), typeof(LogService<>));
         services.AddTransient<ICatalogQueries, EfCatalogQueries>();
         services.AddTransient<IOrderQueries, OrderQueries>();
-        services.AddTransient<IBasketQueries, BasketQueries>();
         services.AddTransient<IBasketQueries, EfBasketQueries>();
         services.AddTransient<IUserQueries, EfUserQueries>();
         services.AddTransient<IVnPayService, VnPayService>();

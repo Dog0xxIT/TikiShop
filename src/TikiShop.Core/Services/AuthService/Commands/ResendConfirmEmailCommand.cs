@@ -1,4 +1,4 @@
-﻿using TikiShop.Core.Services.EmailService;
+﻿using TikiShop.Core.ThirdServices.EmailService;
 using TikiShop.Model.DTO;
 
 namespace TikiShop.Core.Services.AuthService.Commands;
@@ -11,7 +11,8 @@ internal class ResendConfirmEmailCommandHandler : IRequestHandler<ResendConfirmE
     private readonly ILogService<ResendConfirmEmailCommandHandler> _logService;
     private readonly UserManager<User> _userManager;
 
-    public ResendConfirmEmailCommandHandler(ILogService<ResendConfirmEmailCommandHandler> logService, UserManager<User> userManager,
+    public ResendConfirmEmailCommandHandler(ILogService<ResendConfirmEmailCommandHandler> logService,
+        UserManager<User> userManager,
         IEmailSender<User> emailSender)
     {
         _logService = logService;

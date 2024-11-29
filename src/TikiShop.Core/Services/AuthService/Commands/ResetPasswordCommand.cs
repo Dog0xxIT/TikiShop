@@ -9,7 +9,8 @@ internal class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordComman
     private readonly ILogService<ResetPasswordCommandHandler> _logService;
     private readonly UserManager<User> _userManager;
 
-    public ResetPasswordCommandHandler(ILogService<ResetPasswordCommandHandler> logService, UserManager<User> userManager)
+    public ResetPasswordCommandHandler(ILogService<ResetPasswordCommandHandler> logService,
+        UserManager<User> userManager)
     {
         _logService = logService;
         _userManager = userManager;

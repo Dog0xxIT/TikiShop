@@ -1,4 +1,5 @@
-﻿using TikiShop.Model.ResponseModels.Basket;
+﻿using TikiShop.Model.DTO;
+using TikiShop.Model.ResponseModels.Basket;
 
 namespace TikiShop.Core.Services.BasketService.Queries;
 
@@ -13,7 +14,7 @@ public class EfBasketQueries : IBasketQueries
         _logger = logger;
     }
 
-    public async Task<GetBasketByCustomerIdResponse> GetBasketByCustomerId(int buyerId)
+    public async Task<ResultObject<GetBasketByCustomerIdResp>> GetBasketByCustomerId(int buyerId)
     {
         _logger.LogInformation(
             $"Starting to retrieve basket for BuyerId: {buyerId}"); // Thêm logging với string interpolation
@@ -21,11 +22,11 @@ public class EfBasketQueries : IBasketQueries
         var result = await _context.Baskets
             .AsNoTracking()
             .Select(basket =>
-                new GetBasketByCustomerIdResponse
+                new GetBasketByCustomerIdResp
                 {
                     BuyerId = basket.BuyerId,
                     Total = basket.Total,
-                    Items = basket.Items.Select(bi => new GetBasketByCustomerIdResponse.Item
+                    Items = basket.Items.Select(bi => new GetBasketByCustomerIdResp.Item
                     {
                         Id = bi.Id,
                         Quantity = bi.Quantity,
@@ -43,6 +44,6 @@ public class EfBasketQueries : IBasketQueries
         else
             _logger.LogWarning($"No basket found for BuyerId: {buyerId}"); // Thêm logging cho trường hợp không tìm thấy
 
-        return result ?? new GetBasketByCustomerIdResponse();
+        return ResultObject<GetBasketByCustomerIdResp>.Success(result);
     }
 }

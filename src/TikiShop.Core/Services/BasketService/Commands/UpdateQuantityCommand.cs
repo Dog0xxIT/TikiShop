@@ -57,7 +57,8 @@ internal class UpdateQuantityCommandHandler : IRequestHandler<UpdateQuantityComm
         if (basketItem is null)
         {
             // If item not found, log and add a new item to the basket
-            _logService.LogInformation($"BasketItem not found, creating new item for ProductSkuId: {request.ProductSkuId}");
+            _logService.LogInformation(
+                $"BasketItem not found, creating new item for ProductSkuId: {request.ProductSkuId}");
             basketItem = new BasketItem
             {
                 BasketId = basket.Id,

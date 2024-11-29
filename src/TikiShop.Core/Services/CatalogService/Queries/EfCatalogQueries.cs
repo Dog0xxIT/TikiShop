@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using TikiShop.Model.DTO;
 using TikiShop.Model.Enums;
 using TikiShop.Model.RequestModels;
 using TikiShop.Model.RequestModels.Catalog;
@@ -18,12 +19,12 @@ public class EfCatalogQueries : ICatalogQueries
         _logger = logger;
     }
 
-    public async Task<PaginationResponse<GetListProductsResponse>> GetListProducts(GetListProductRequest req)
+    public async Task<ResultObject<PaginationResp<GetListProductsResp>>> GetListProducts(GetListProductReq req)
     {
         if (req.MinPrice > req.MaxPrice)
         {
             _logger.LogWarning($"Invalid price range: MinPrice: {req.MinPrice}, MaxPrice: {req.MaxPrice}");
-            return new PaginationResponse<GetListProductsResponse>();
+            return new ResultObject<PaginationResp<GetListProductsResp>>();
         }
 
         req.MinPrice ??= 0;
@@ -39,7 +40,7 @@ public class EfCatalogQueries : ICatalogQueries
 
         var productDtoList = await queryable
             .Select(product =>
-                new GetListProductsResponse
+                new GetListProductsResp
                 {
                     Id = product.Id,
                     Name = product.Name,
@@ -59,10 +60,10 @@ public class EfCatalogQueries : ICatalogQueries
         var totalProducts = await _context.Products.CountAsync();
         var totalPage = totalProducts / req.Limit + 1;
 
-        var response = new PaginationResponse<GetListProductsResponse>
+        var response = new PaginationResp<GetListProductsResp>
         {
             Data = productDtoList,
-            Meta = new PaginationMetaDto
+            Meta = new PaginationMeta
             {
                 Count = productDtoList.Count,
                 CurrentPage = req.Page,
@@ -73,10 +74,10 @@ public class EfCatalogQueries : ICatalogQueries
         };
 
         _logger.LogInformation($"Successfully retrieved {productDtoList.Count} products for page {req.Page}");
-        return response;
+        return ResultObject<PaginationResp<GetListProductsResp>>.Success(response);
     }
 
-    public async Task<GetProductByIdResponse> GetProductById(int id)
+    public async Task<ResultObject<GetProductByIdResp>> GetProductById(int id)
     {
         var rnd = new Random();
         _logger.LogInformation($"Retrieving product details for ProductId: {id}");
@@ -84,7 +85,7 @@ public class EfCatalogQueries : ICatalogQueries
         var productDto = await _context.Products
             .AsNoTracking()
             .Select(product =>
-                new GetProductByIdResponse
+                new GetProductByIdResp
                 {
                     Id = product.Id,
                     Name = product.Name,
@@ -95,26 +96,26 @@ public class EfCatalogQueries : ICatalogQueries
                     TotalBought = product.Id,
                     ShortDescription = product.Summary,
                     Description = product.Description,
-                    Brand = new GetProductByIdResponse.BrandDto
+                    Brand = new GetProductByIdResp.BrandDto
                     {
                         Id = product.BrandId,
                         Name = product.Brand.Name,
                         Slug = product.Brand.Slug
                     },
-                    Category = new GetProductByIdResponse.CategoryDto
+                    Category = new GetProductByIdResp.CategoryDto
                     {
                         Id = product.CategoryId,
                         Name = product.Category.Name,
                         ThumbnailUrl = product.Category.ThumbnailUrl
                     },
-                    ProductSkus = product.ProductSkus.Select(ps => new GetProductByIdResponse.ProductSkuDto
+                    ProductSkus = product.ProductSkus.Select(ps => new GetProductByIdResp.ProductSkuDto
                     {
                         Price = ps.Price,
                         Id = ps.Id,
                         Name = ps.Name,
                         Sku = ps.Sku,
                         Option1 = ps.AttributeId1 != null
-                            ? new GetProductByIdResponse.ConfigOptionDto
+                            ? new GetProductByIdResp.ConfigOptionDto
                             {
                                 Value = ps.Attribute1!.Value,
                                 Code = ps.Attribute1.Code,
@@ -122,7 +123,7 @@ public class EfCatalogQueries : ICatalogQueries
                             }
                             : null,
                         Option2 = ps.AttributeId2 != null
-                            ? new GetProductByIdResponse.ConfigOptionDto
+                            ? new GetProductByIdResp.ConfigOptionDto
                             {
                                 Value = ps.Attribute2!.Value,
                                 Code = ps.Attribute2.Code,
@@ -139,10 +140,10 @@ public class EfCatalogQueries : ICatalogQueries
         else
             _logger.LogWarning($"No product found for ProductId: {id}");
 
-        return productDto ?? new GetProductByIdResponse();
+        return ResultObject<GetProductByIdResp>.Success(productDto);
     }
 
-    public async Task<PaginationResponse<GetListBrandsResponse>> GetListBrands(PaginationRequest req)
+    public async Task<ResultObject<PaginationResp<GetListBrandsResp>>> GetListBrands(PaginationReq req)
     {
         _logger.LogInformation($"Retrieving brand list for page {req.Page} with limit {req.Limit}");
 
@@ -155,12 +156,12 @@ public class EfCatalogQueries : ICatalogQueries
         var brands = await queryable.ToListAsync();
         var totalBrand = await _context.Brands.CountAsync();
         var totalPage = totalBrand / req.Limit + 1;
-        var brandsDto = brands.Adapt<List<GetListBrandsResponse>>();
+        var brandsDto = brands.Adapt<List<GetListBrandsResp>>();
 
-        var response = new PaginationResponse<GetListBrandsResponse>
+        var response = new PaginationResp<GetListBrandsResp>
         {
             Data = brandsDto,
-            Meta = new PaginationMetaDto
+            Meta = new PaginationMeta
             {
                 Count = brandsDto.Count,
                 CurrentPage = req.Page,
@@ -171,10 +172,10 @@ public class EfCatalogQueries : ICatalogQueries
         };
 
         _logger.LogInformation($"Successfully retrieved {brandsDto.Count} brands for page {req.Page}");
-        return response;
+        return ResultObject<PaginationResp<GetListBrandsResp>>.Success(response);
     }
 
-    public async Task<List<GetListCategoriesResponse>> GetCategoriesHierarchy()
+    public async Task<ResultObject<List<GetListCategoriesResp>>> GetCategoriesHierarchy()
     {
         _logger.LogInformation("Retrieving categories hierarchy");
 
@@ -184,7 +185,7 @@ public class EfCatalogQueries : ICatalogQueries
 
         var categoriesDto = categories
             .Where(category => category.ParentId == null)
-            .Select(category => new GetListCategoriesResponse
+            .Select(category => new GetListCategoriesResp
             {
                 Id = category.Id,
                 Name = category.Name,
@@ -196,10 +197,10 @@ public class EfCatalogQueries : ICatalogQueries
 
         _logger.LogInformation($"Successfully retrieved {categoriesDto.Count} categories");
 
-        return categoriesDto;
+        return ResultObject<List<GetListCategoriesResp>>.Success(categoriesDto);
     }
 
-    public async Task<PaginationResponse<GetListCategoriesResponse>> GetCategories(PaginationRequest req)
+    public async Task<ResultObject<PaginationResp<GetListCategoriesResp>>> GetCategories(PaginationReq req)
     {
         _logger.LogInformation($"Retrieving categories for page {req.Page} with limit {req.Limit}");
 
@@ -213,19 +214,19 @@ public class EfCatalogQueries : ICatalogQueries
         var totalCategory = await _context.Categories.CountAsync();
         var totalPage = totalCategory / req.Limit + 1;
 
-        var categoriesDto = categories.Select(category => new GetListCategoriesResponse
+        var categoriesDto = categories.Select(category => new GetListCategoriesResp
         {
             Id = category.Id,
             Name = category.Name,
             ParentId = category.ParentId,
             ThumbnailUrl = category.ThumbnailUrl,
-            Child = new List<GetListCategoriesResponse>()
+            Child = new List<GetListCategoriesResp>()
         }).ToList();
 
-        var response = new PaginationResponse<GetListCategoriesResponse>
+        var response = new PaginationResp<GetListCategoriesResp>
         {
             Data = categoriesDto,
-            Meta = new PaginationMetaDto
+            Meta = new PaginationMeta
             {
                 Count = categoriesDto.Count,
                 CurrentPage = req.Page,
@@ -237,10 +238,10 @@ public class EfCatalogQueries : ICatalogQueries
 
         _logger.LogInformation($"Successfully retrieved {categoriesDto.Count} categories for page {req.Page}");
 
-        return response;
+        return ResultObject<PaginationResp<GetListCategoriesResp>>.Success(response);
     }
 
-    private IQueryable<Product> ApplySorting(IQueryable<Product> queryable, GetListProductRequest req)
+    private IQueryable<Product> ApplySorting(IQueryable<Product> queryable, GetListProductReq req)
     {
         queryable = req.SortBy switch
         {
@@ -261,7 +262,7 @@ public class EfCatalogQueries : ICatalogQueries
     }
 
     private IQueryable<Product> ApplyFilters(IQueryable<Product> queryable,
-        GetListProductRequest req,
+        GetListProductReq req,
         List<int> brands,
         List<int> categories)
     {
@@ -283,16 +284,16 @@ public class EfCatalogQueries : ICatalogQueries
         return queryable;
     }
 
-    private List<GetListCategoriesResponse> GetChildCategories(
+    private List<GetListCategoriesResp> GetChildCategories(
         int parentCategoryId,
         List<Category> categoryList,
         int level)
     {
-        if (level >= 3) return new List<GetListCategoriesResponse>();
+        if (level >= 3) return new List<GetListCategoriesResp>();
 
         var childCategories = categoryList.Where(c => c.ParentId == parentCategoryId);
 
-        return childCategories.Select(child => new GetListCategoriesResponse
+        return childCategories.Select(child => new GetListCategoriesResp
         {
             Id = child.Id,
             Name = child.Name,

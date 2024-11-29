@@ -12,7 +12,8 @@ internal class
     private readonly ILogService<ExternalLoginCommandHandler> _logService;
     private readonly SignInManager<User> _signInManager;
 
-    public ExternalLoginCommandHandler(ILogService<ExternalLoginCommandHandler> logService, SignInManager<User> signInManager)
+    public ExternalLoginCommandHandler(ILogService<ExternalLoginCommandHandler> logService,
+        SignInManager<User> signInManager)
     {
         _logService = logService;
         _signInManager = signInManager;

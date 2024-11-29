@@ -1,4 +1,4 @@
-﻿using TikiShop.Core.Services.EmailService;
+﻿using TikiShop.Core.ThirdServices.EmailService;
 using TikiShop.Model.DTO;
 
 namespace TikiShop.Core.Services.AuthService.Commands;
@@ -11,7 +11,8 @@ internal class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComm
     private readonly ILogService<ForgotPasswordCommandHandler> _logService;
     private readonly UserManager<User> _userManager;
 
-    public ForgotPasswordCommandHandler(ILogService<ForgotPasswordCommandHandler> logService, IEmailSender<User> emailSender,
+    public ForgotPasswordCommandHandler(ILogService<ForgotPasswordCommandHandler> logService,
+        IEmailSender<User> emailSender,
         UserManager<User> userManager)
     {
         _logService = logService;

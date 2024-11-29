@@ -13,7 +13,11 @@ public class OrderController : Controller
         _mediator = mediator;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    /// <summary>
+    /// Retrieves the order details for a given buyer ID.
+    /// </summary>
+    /// <param name="buyerId">The ID of the buyer to fetch the orders for.</param>
+    /// <returns>An HTTP response with the order details for the specified buyer.</returns>
     [HttpGet("user/{buyerId}")]
     public async Task<IActionResult> GetOrderByBuyerId([FromRoute] int buyerId)
     {
@@ -21,7 +25,11 @@ public class OrderController : Controller
         return Ok(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    /// <summary>
+    /// Retrieves the order details for a specific order ID.
+    /// </summary>
+    /// <param name="id">The ID of the order to fetch.</param>
+    /// <returns>An HTTP response with the order details for the specified order.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById([FromRoute] int id)
     {
@@ -29,7 +37,10 @@ public class OrderController : Controller
         return Ok(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    /// <summary>
+    /// Retrieves the list of available cart types.
+    /// </summary>
+    /// <returns>An HTTP response with the list of cart types.</returns>
     [HttpGet("/cartTypes")]
     public async Task<IActionResult> CartTypes()
     {
@@ -37,16 +48,20 @@ public class OrderController : Controller
         return Ok(result);
     }
 
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <summary>
+    /// Creates a new order.
+    /// </summary>
+    /// <returns>An HTTP response indicating the creation of the order.</returns>
     [HttpPost]
     public async Task<IActionResult> Create()
     {
         return Created();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <summary>
+    /// Creates a draft order.
+    /// </summary>
+    /// <returns>An HTTP response indicating the creation of a draft order.</returns>
     [HttpPost("draft")]
     public async Task<IActionResult> CreateDraft()
     {
@@ -54,19 +69,26 @@ public class OrderController : Controller
         return Created();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <summary>
+    /// Cancels an existing order by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the order to cancel.</param>
+    /// <returns>An HTTP response indicating whether the cancellation was successful.</returns>
     [HttpPatch("cancel/{id}")]
     public async Task<IActionResult> Cancel([FromRoute] int id)
     {
         return Ok();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    /// <summary>
+    /// Ships an order by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the order to mark as shipped.</param>
+    /// <returns>An HTTP response indicating whether the shipping was successful.</returns>
     [HttpPatch("ship/{id}")]
     public async Task<IActionResult> Ship([FromRoute] int id)
     {
         return Ok();
     }
+
 }
